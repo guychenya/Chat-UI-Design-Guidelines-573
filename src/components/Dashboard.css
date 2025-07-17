@@ -1,4 +1,5 @@
-.dashboard {
+.dashboard,
+.dashboard-in-panel {
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -7,12 +8,19 @@
   overflow-y: auto;
 }
 
-.dashboard.dark {
+.dashboard-in-panel {
+  padding: 0;
+  gap: 1.5rem;
+}
+
+.dashboard.dark,
+.dashboard-in-panel.dark {
   background: rgba(15, 23, 42, 0.95);
   color: #e2e8f0;
 }
 
-.dashboard.light {
+.dashboard.light,
+.dashboard-in-panel.light {
   background: rgba(248, 250, 252, 0.95);
   color: #1e293b;
 }
@@ -43,6 +51,11 @@
   gap: 2rem;
 }
 
+.dashboard-in-panel .dashboard-kpis {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
 /* Progress Ring */
 .progress-ring {
   display: flex;
@@ -52,14 +65,21 @@
   border-radius: 16px;
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.dashboard.dark .progress-ring {
+.dashboard-in-panel .progress-ring {
+  padding: 1rem;
+}
+
+.dashboard.dark .progress-ring,
+.dashboard-in-panel.dark .progress-ring {
   background: rgba(30, 41, 59, 0.5);
   border: 1px solid rgba(51, 65, 85, 0.5);
 }
 
-.dashboard.light .progress-ring {
+.dashboard.light .progress-ring,
+.dashboard-in-panel.light .progress-ring {
   background: rgba(248, 250, 252, 0.5);
   border: 1px solid rgba(203, 213, 225, 0.5);
 }
@@ -81,6 +101,10 @@
   color: #3b82f6;
 }
 
+.dashboard-in-panel .progress-ring-icon {
+  font-size: 1.2rem;
+}
+
 .progress-ring-value {
   position: absolute;
   top: 70%;
@@ -90,11 +114,19 @@
   font-weight: 600;
 }
 
+.dashboard-in-panel .progress-ring-value {
+  font-size: 1rem;
+}
+
 .progress-ring-label {
   font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
   opacity: 0.8;
+}
+
+.dashboard-in-panel .progress-ring-label {
+  font-size: 0.8rem;
 }
 
 /* Progress Bar */
@@ -103,14 +135,22 @@
   border-radius: 16px;
   backdrop-filter: blur(8px);
   margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.dashboard.dark .progress-bar-container {
+.dashboard-in-panel .progress-bar-container {
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.dashboard.dark .progress-bar-container,
+.dashboard-in-panel.dark .progress-bar-container {
   background: rgba(30, 41, 59, 0.5);
   border: 1px solid rgba(51, 65, 85, 0.5);
 }
 
-.dashboard.light .progress-bar-container {
+.dashboard.light .progress-bar-container,
+.dashboard-in-panel.light .progress-bar-container {
   background: rgba(248, 250, 252, 0.5);
   border: 1px solid rgba(203, 213, 225, 0.5);
 }
@@ -119,6 +159,10 @@
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
+}
+
+.dashboard-in-panel .progress-bar-header {
+  margin-bottom: 0.75rem;
 }
 
 .progress-bar-icon {
@@ -133,10 +177,20 @@
   margin-right: 0.75rem;
 }
 
+.dashboard-in-panel .progress-bar-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 0.5rem;
+}
+
 .progress-bar-label {
   flex: 1;
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.dashboard-in-panel .progress-bar-label {
+  font-size: 0.8rem;
 }
 
 .progress-bar-value {
@@ -148,6 +202,10 @@
   background: rgba(100, 116, 139, 0.2);
   border-radius: 4px;
   overflow: hidden;
+}
+
+.dashboard-in-panel .progress-bar-track {
+  height: 6px;
 }
 
 .progress-bar-fill {
@@ -163,14 +221,21 @@
   padding: 1.5rem;
   border-radius: 16px;
   backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.dashboard.dark .stat-card {
+.dashboard-in-panel .stat-card {
+  padding: 1rem;
+}
+
+.dashboard.dark .stat-card,
+.dashboard-in-panel.dark .stat-card {
   background: rgba(30, 41, 59, 0.5);
   border: 1px solid rgba(51, 65, 85, 0.5);
 }
 
-.dashboard.light .stat-card {
+.dashboard.light .stat-card,
+.dashboard-in-panel.light .stat-card {
   background: rgba(248, 250, 252, 0.5);
   border: 1px solid rgba(203, 213, 225, 0.5);
 }
@@ -187,6 +252,13 @@
   color: #f97316;
 }
 
+.dashboard-in-panel .stat-card-icon {
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
+  margin-right: 0.75rem;
+}
+
 .stat-card-content {
   flex: 1;
 }
@@ -197,15 +269,71 @@
   margin-bottom: 0.25rem;
 }
 
+.dashboard-in-panel .stat-card-label {
+  font-size: 0.8rem;
+}
+
 .stat-card-value {
   font-size: 1.5rem;
   font-weight: 600;
+}
+
+.dashboard-in-panel .stat-card-value {
+  font-size: 1.2rem;
 }
 
 .stat-card-unit {
   font-size: 1rem;
   opacity: 0.8;
   margin-left: 0.25rem;
+}
+
+.dashboard-in-panel .stat-card-unit {
+  font-size: 0.9rem;
+}
+
+/* Temperature Card */
+.temperature-card .stat-card-content {
+  flex: 1;
+  width: 100%;
+}
+
+.temperature-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.temperature-slider {
+  flex: 1;
+  height: 4px;
+  appearance: none;
+  background: rgba(100, 116, 139, 0.3);
+  border-radius: 2px;
+  outline: none;
+}
+
+.temperature-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f97316;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard.dark .temperature-slider::-webkit-slider-thumb {
+  border-color: #1e293b;
+}
+
+.temperature-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  min-width: 36px;
+  text-align: center;
 }
 
 /* Status Bar */
@@ -216,14 +344,22 @@
   padding: 1rem;
   border-radius: 12px;
   backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.dashboard.dark .dashboard-status-bar {
+.dashboard-in-panel .dashboard-status-bar {
+  padding: 0.75rem;
+  gap: 0.75rem;
+}
+
+.dashboard.dark .dashboard-status-bar,
+.dashboard-in-panel.dark .dashboard-status-bar {
   background: rgba(30, 41, 59, 0.5);
   border: 1px solid rgba(51, 65, 85, 0.5);
 }
 
-.dashboard.light .dashboard-status-bar {
+.dashboard.light .dashboard-status-bar,
+.dashboard-in-panel.light .dashboard-status-bar {
   background: rgba(248, 250, 252, 0.5);
   border: 1px solid rgba(203, 213, 225, 0.5);
 }
@@ -236,6 +372,11 @@
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.dashboard-in-panel .status-badge {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
 }
 
 .status-badge.active {
@@ -261,10 +402,18 @@
   gap: 1rem;
 }
 
+.dashboard-in-panel .dashboard-kpi-group {
+  gap: 0.75rem;
+}
+
 .dashboard-panels {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.dashboard-in-panel .dashboard-panels {
+  gap: 1rem;
 }
 
 .dashboard-panel {
@@ -272,14 +421,17 @@
   overflow: hidden;
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.dashboard.dark .dashboard-panel {
+.dashboard.dark .dashboard-panel,
+.dashboard-in-panel.dark .dashboard-panel {
   background: rgba(30, 41, 59, 0.5);
   border: 1px solid rgba(51, 65, 85, 0.5);
 }
 
-.dashboard.light .dashboard-panel {
+.dashboard.light .dashboard-panel,
+.dashboard-in-panel.light .dashboard-panel {
   background: rgba(248, 250, 252, 0.5);
   border: 1px solid rgba(203, 213, 225, 0.5);
 }
@@ -292,11 +444,20 @@
   cursor: pointer;
 }
 
+.dashboard-in-panel .dashboard-panel-header {
+  padding: 0.75rem 1rem;
+}
+
 .dashboard-panel-title {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   font-weight: 600;
+}
+
+.dashboard-in-panel .dashboard-panel-title {
+  gap: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .dashboard-panel-toggle {
@@ -312,6 +473,10 @@
   transition: all 0.2s ease;
 }
 
+.dashboard-in-panel .dashboard-panel-toggle {
+  font-size: 0.9rem;
+}
+
 .dashboard-panel-toggle:hover {
   opacity: 1;
 }
@@ -321,11 +486,17 @@
   border-top: 1px solid;
 }
 
-.dashboard.dark .dashboard-panel-content {
+.dashboard-in-panel .dashboard-panel-content {
+  padding: 1rem;
+}
+
+.dashboard.dark .dashboard-panel-content,
+.dashboard-in-panel.dark .dashboard-panel-content {
   border-color: rgba(51, 65, 85, 0.3);
 }
 
-.dashboard.light .dashboard-panel-content {
+.dashboard.light .dashboard-panel-content,
+.dashboard-in-panel.light .dashboard-panel-content {
   border-color: rgba(203, 213, 225, 0.3);
 }
 
@@ -338,6 +509,10 @@
   margin-bottom: 2rem;
 }
 
+.dashboard-in-panel .bbcr-panel {
+  margin-bottom: 1rem;
+}
+
 .bbcr-toggle {
   display: flex;
   align-items: center;
@@ -348,6 +523,11 @@
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.dashboard-in-panel .bbcr-toggle {
+  font-size: 0.8rem;
+  gap: 0.4rem;
 }
 
 .bbcr-toggle.active {
@@ -367,11 +547,19 @@
   font-size: 0.9rem;
 }
 
-.dashboard.dark .bbcr-status {
+.dashboard-in-panel .bbcr-status {
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  gap: 0.5rem;
+}
+
+.dashboard.dark .bbcr-status,
+.dashboard-in-panel.dark .bbcr-status {
   border-color: rgba(51, 65, 85, 0.3);
 }
 
-.dashboard.light .bbcr-status {
+.dashboard.light .bbcr-status,
+.dashboard-in-panel.light .bbcr-status {
   border-color: rgba(203, 213, 225, 0.3);
 }
 
@@ -379,6 +567,11 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
+}
+
+.dashboard-in-panel .bbcr-indicator {
+  width: 10px;
+  height: 10px;
 }
 
 .bbcr-indicator.active {

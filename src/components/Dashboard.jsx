@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import { useTheme } from '../contexts/ThemeContext';
+import { useSettings } from '../contexts/SettingsContext';
 import ReactECharts from 'echarts-for-react';
 import './Dashboard.css';
 
@@ -121,6 +122,8 @@ const StatusBadge = ({ icon, label, active }) => {
 };
 
 const SemanticTree = () => {
+  const { theme } = useTheme();
+  
   const options = {
     tooltip: {
       trigger: 'item',
@@ -172,7 +175,8 @@ const SemanticTree = () => {
           rotate: 0,
           verticalAlign: 'middle',
           align: 'right',
-          fontSize: 12
+          fontSize: 12,
+          color: theme === 'dark' ? '#e2e8f0' : '#1e293b'
         },
         leaves: {
           label: {
@@ -191,12 +195,14 @@ const SemanticTree = () => {
 
   return (
     <div className="semantic-tree">
-      <ReactECharts option={options} style={{ height: '300px', width: '100%' }} />
+      <ReactECharts option={options} style={{ height: '300px', width: '100%' }} theme={theme === 'dark' ? 'dark' : ''} />
     </div>
   );
 };
 
 const ResonanceFlow = () => {
+  const { theme } = useTheme();
+  
   const options = {
     tooltip: {
       trigger: 'item',
@@ -231,6 +237,14 @@ const ResonanceFlow = () => {
         lineStyle: {
           color: 'gradient',
           curveness: 0.5
+        },
+        label: {
+          color: theme === 'dark' ? '#e2e8f0' : '#1e293b'
+        },
+        itemStyle: {
+          color: theme === 'dark' ? 
+            ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1'] : 
+            ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#4f46e5']
         }
       }
     ]
@@ -238,95 +252,109 @@ const ResonanceFlow = () => {
 
   return (
     <div className="resonance-flow">
-      <ReactECharts option={options} style={{ height: '300px', width: '100%' }} />
+      <ReactECharts option={options} style={{ height: '300px', width: '100%' }} theme={theme === 'dark' ? 'dark' : ''} />
     </div>
   );
 };
 
-const Dashboard = () => {
+const Dashboard = ({ inPanel = false }) => {
   const { theme } = useTheme();
-  const [semanticUncertainty, setSemanticUncertainty] = useState(68);
-  const [boundaryThreshold, setBoundaryThreshold] = useState(75);
-  const [logicalResonance, setLogicalResonance] = useState(82);
-  const [temperature, setTemperature] = useState(0.7);
+  const { settings, updateModelParameter } = useSettings();
   
+  const [semanticUncertainty, setSemanticUncertainty] = useState(68);
+  const [boundaryThreshold, setBoundaryThreshold] = useState(settings.modelParameters.temperature * 100);
+  const [logicalResonance, setLogicalResonance] = useState(82);
+  const [temperature, setTemperature] = useState(settings.modelParameters.temperature);
   const [knowledgeBoundary, setKnowledgeBoundary] = useState(true);
   const [hallucinationDetection, setHallucinationDetection] = useState(true);
   const [memoryExport, setMemoryExport] = useState(false);
-  
   const [bbcrEnabled, setBbcrEnabled] = useState(true);
   const [treeExpanded, setTreeExpanded] = useState(false);
   const [flowExpanded, setFlowExpanded] = useState(false);
+
+  // Sync temperature with settings
+  useEffect(() => {
+    setTemperature(settings.modelParameters.temperature);
+    setBoundaryThreshold(settings.modelParameters.temperature * 100);
+  }, [settings.modelParameters.temperature]);
+
+  // Handle temperature change in the dashboard
+  const handleTemperatureChange = (newTemp) => {
+    setTemperature(newTemp);
+    updateModelParameter('temperature', newTemp);
+  };
 
   // Simulate changing metrics
   useEffect(() => {
     const interval = setInterval(() => {
       setSemanticUncertainty(prev => Math.max(50, Math.min(95, prev + (Math.random() * 8 - 4))));
-      setBoundaryThreshold(prev => Math.max(60, Math.min(90, prev + (Math.random() * 6 - 3))));
       setLogicalResonance(prev => Math.max(65, Math.min(98, prev + (Math.random() * 6 - 3))));
-      setTemperature(prev => Math.max(0.1, Math.min(1.0, prev + (Math.random() * 0.2 - 0.1))).toFixed(2));
     }, 5000);
     
     return () => clearInterval(interval);
   }, []);
 
+  const dashboardClass = inPanel ? 'dashboard-in-panel' : 'dashboard';
+
   return (
-    <div className={`dashboard ${theme}`}>
-      <div className="dashboard-header">
-        <h2 className="dashboard-title">Semantic Analysis Dashboard</h2>
-        <p className="dashboard-subtitle">Real-time semantic metrics and analysis visualization</p>
-      </div>
-      
+    <div className={`${dashboardClass} ${theme}`}>
+      {!inPanel && (
+        <div className="dashboard-header">
+          <h2 className="dashboard-title">Semantic Analysis Dashboard</h2>
+          <p className="dashboard-subtitle">Real-time semantic metrics and analysis visualization</p>
+        </div>
+      )}
+
       <div className="dashboard-kpis">
-        <ProgressRing 
-          value={semanticUncertainty} 
-          color="#3b82f6" 
-          label="Semantic Uncertainty (Delta S)" 
+        <ProgressRing
+          value={semanticUncertainty}
+          color="#3b82f6"
+          label="Semantic Uncertainty (Delta S)"
           icon={FiActivity}
+          size={inPanel ? 100 : 120}
         />
-        
-        <ProgressRing 
-          value={logicalResonance} 
-          color="#10b981" 
-          label="Logical Resonance (E Resonance)" 
+        <ProgressRing
+          value={logicalResonance}
+          color="#10b981"
+          label="Logical Resonance (E Resonance)"
           icon={FiZap}
+          size={inPanel ? 100 : 120}
         />
-        
         <div className="dashboard-kpi-group">
-          <ProgressBar 
-            value={boundaryThreshold} 
-            label="Boundary Threshold (Lambda Observe)" 
+          <ProgressBar
+            value={boundaryThreshold}
+            label="Boundary Threshold (Lambda Observe)"
             icon={FiMaximize2}
           />
-          
-          <StatCard 
-            icon={FiThermometer} 
-            label="Temperature" 
-            value={temperature} 
-            color="rgba(249, 115, 22, 0.2)" 
-            unit=""
-          />
+          <div className="stat-card temperature-card">
+            <div className="stat-card-icon" style={{backgroundColor: "rgba(249, 115, 22, 0.2)"}}>
+              <SafeIcon icon={FiThermometer} />
+            </div>
+            <div className="stat-card-content">
+              <div className="stat-card-label">Temperature</div>
+              <div className="temperature-control">
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={temperature}
+                  onChange={(e) => handleTemperatureChange(parseFloat(e.target.value))}
+                  className="temperature-slider"
+                />
+                <div className="temperature-value">{temperature}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      
+
       <div className="dashboard-status-bar">
-        <StatusBadge 
-          icon={FiShield} 
-          label="Knowledge Boundary" 
-          active={knowledgeBoundary} 
-        />
-        <StatusBadge 
-          icon={FiEye} 
-          label="Hallucination Detection" 
-          active={hallucinationDetection} 
-        />
-        <StatusBadge 
-          icon={FiShare2} 
-          label="Memory Export" 
-          active={memoryExport} 
-        />
+        <StatusBadge icon={FiShield} label="Knowledge Boundary" active={knowledgeBoundary} />
+        <StatusBadge icon={FiEye} label="Hallucination Detection" active={hallucinationDetection} />
+        <StatusBadge icon={FiShare2} label="Memory Export" active={memoryExport} />
       </div>
-      
+
       <div className="dashboard-panels">
         <div className={`dashboard-panel ${treeExpanded ? 'expanded' : ''}`}>
           <div className="dashboard-panel-header" onClick={() => setTreeExpanded(!treeExpanded)}>
@@ -344,7 +372,7 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-        
+
         <div className={`dashboard-panel ${flowExpanded ? 'expanded' : ''}`}>
           <div className="dashboard-panel-header" onClick={() => setFlowExpanded(!flowExpanded)}>
             <div className="dashboard-panel-title">
@@ -361,14 +389,14 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-        
+
         <div className="dashboard-panel bbcr-panel">
           <div className="dashboard-panel-header">
             <div className="dashboard-panel-title">
               <SafeIcon icon={FiShield} />
               <span>Boundary-Based Coherence Resolution (BBCR)</span>
             </div>
-            <button 
+            <button
               className={`bbcr-toggle ${bbcrEnabled ? 'active' : ''}`}
               onClick={() => setBbcrEnabled(!bbcrEnabled)}
             >

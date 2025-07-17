@@ -1,4 +1,246 @@
-/* Add to existing InputArea.css */
+.input-area {
+  padding: 1rem;
+  border-top: 1px solid;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.input-area.dark {
+  background: rgba(15, 23, 42, 0.95);
+  border-color: rgba(51, 65, 85, 0.3);
+}
+
+.input-area.light {
+  background: rgba(248, 250, 252, 0.95);
+  border-color: rgba(203, 213, 225, 0.3);
+}
+
+.input-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.input-area.dark .input-wrapper {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(51, 65, 85, 0.5);
+}
+
+.input-area.dark .input-wrapper:focus-within,
+.input-area.dark .input-wrapper.drag-over,
+.input-area.dark.focused .input-wrapper {
+  border-color: rgba(59, 130, 246, 0.7);
+  background: rgba(30, 41, 59, 0.7);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.input-area.light .input-wrapper {
+  background: rgba(248, 250, 252, 0.8);
+  border-color: rgba(203, 213, 225, 0.5);
+}
+
+.input-area.light .input-wrapper:focus-within,
+.input-area.light .input-wrapper.drag-over,
+.input-area.light.focused .input-wrapper {
+  border-color: rgba(59, 130, 246, 0.7);
+  background: rgba(248, 250, 252, 0.95);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.message-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: transparent;
+  resize: none;
+  color: inherit;
+  font-size: var(--input-font-size, 0.95rem);
+  line-height: 1.5;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.message-input:focus {
+  outline: none;
+}
+
+.message-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.attachment-btn,
+.voice-btn,
+.send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.input-area.dark .attachment-btn:hover,
+.input-area.dark .voice-btn:hover {
+  background: rgba(51, 65, 85, 0.5);
+}
+
+.input-area.light .attachment-btn:hover,
+.input-area.light .voice-btn:hover {
+  background: rgba(203, 213, 225, 0.5);
+}
+
+.send-btn {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+}
+
+.send-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+}
+
+.voice-btn.listening {
+  color: #ef4444;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.file-input {
+  display: none;
+}
+
+.input-form {
+  position: relative;
+}
+
+.input-footer {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.input-disclaimer {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+/* File preview styles */
+.selected-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.file-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(100, 116, 139, 0.1);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+  max-width: 200px;
+}
+
+.dark .file-preview {
+  background: rgba(51, 65, 85, 0.3);
+  border-color: rgba(51, 65, 85, 0.5);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.file-thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(100, 116, 139, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-thumbnail img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.file-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  font-size: 1.25rem;
+}
+
+.dark .file-icon {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.file-name {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
+.file-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.file-remove:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* Dragged items styles */
 .input-wrapper.drag-over {
   border-color: #3b82f6;
   background: rgba(59, 130, 246, 0.1);
@@ -69,4 +311,25 @@
   opacity: 1;
   background: rgba(239, 68, 68, 0.2);
   color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .input-area {
+    padding: 0.75rem;
+  }
+  
+  .input-wrapper {
+    padding: 0.4rem;
+  }
+  
+  .message-input {
+    padding: 0.5rem;
+  }
+  
+  .attachment-btn,
+  .voice-btn,
+  .send-btn {
+    width: 32px;
+    height: 32px;
+  }
 }

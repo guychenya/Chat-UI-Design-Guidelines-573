@@ -6,38 +6,54 @@ import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
 import InputArea from './components/InputArea';
 import SettingsPanel from './components/SettingsPanel';
-import Dashboard from './components/Dashboard';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ChatProvider } from './contexts/ChatContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import './App.css';
 
-const { FiMenu, FiX, FiSettings, FiSun, FiMoon, FiBarChart2 } = FiIcons;
+const { FiMenu, FiX, FiSettings, FiSun, FiMoon } = FiIcons;
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState(() => {
+    // Check localStorage for saved theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) return savedTheme;
+    
+    // Check system preference
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  });
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [dashboardOpen, setDashboardOpen] = useState(false);
-  const [view, setView] = useState('chat'); // 'chat' or 'dashboard'
+  const [fontSize, setFontSize] = useState(() => {
+    try {
+      const savedSettings = localStorage.getItem('appSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        return settings.fontSize || 'medium';
+      }
+      return 'medium';
+    } catch (e) {
+      return 'medium';
+    }
+  });
+
+  // Save theme to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
-  const toggleSettings = () => {
-    setSettingsOpen(!settingsOpen);
-    if (!settingsOpen) setDashboardOpen(false);
-  };
-  const toggleDashboard = () => {
-    setDashboardOpen(!dashboardOpen);
-    if (!dashboardOpen) setSettingsOpen(false);
-  };
-  const toggleView = () => setView(view === 'chat' ? 'dashboard' : 'chat');
+  const toggleSettings = () => setSettingsOpen(!settingsOpen);
 
   return (
     <ThemeProvider theme={theme} setTheme={setTheme}>
       <SettingsProvider>
         <ChatProvider>
-          <div className={`app ${theme}`}>
+          <div className={`app ${theme} font-${fontSize}`}>
             <div className="app-container">
               {/* Header */}
               <header className="app-header">
@@ -56,15 +72,6 @@ function App() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={toggleView}
-                    className="view-toggle-btn"
-                    title={view === 'chat' ? 'Switch to Dashboard' : 'Switch to Chat'}
-                  >
-                    <SafeIcon icon={view === 'chat' ? FiBarChart2 : FiMenu} />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                     onClick={toggleTheme}
                     className="theme-toggle"
                   >
@@ -75,6 +82,7 @@ function App() {
                     whileTap={{ scale: 0.95 }}
                     className="settings-btn"
                     onClick={toggleSettings}
+                    title="Settings & Dashboard"
                   >
                     <SafeIcon icon={FiSettings} />
                   </motion.button>
@@ -87,14 +95,8 @@ function App() {
                 </AnimatePresence>
 
                 <main className={`main-content ${sidebarOpen ? 'with-sidebar' : 'full-width'}`}>
-                  {view === 'chat' ? (
-                    <>
-                      <ChatArea />
-                      <InputArea />
-                    </>
-                  ) : (
-                    <Dashboard />
-                  )}
+                  <ChatArea />
+                  <InputArea />
                 </main>
 
                 <AnimatePresence>

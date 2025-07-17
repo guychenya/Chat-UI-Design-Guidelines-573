@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSettings } from '../contexts/SettingsContext';
+import Dashboard from './Dashboard';
 import './SettingsPanel.css';
 
 const {
@@ -16,16 +17,23 @@ const {
   FiLock,
   FiSun,
   FiMoon,
-  FiMonitor
+  FiMonitor,
+  FiBarChart2
 } = FiIcons;
 
 const SettingsPanel = ({ onClose }) => {
   const { theme, setTheme } = useTheme();
-  const { settings, updateSettings, updateModelParameter } = useSettings();
+  const { settings, updateSettings, updateModelParameter, resetSettings } = useSettings();
+  const [activeTab, setActiveTab] = useState('dashboard'); // Default to dashboard
   
-  const [activeTab, setActiveTab] = useState('general');
+  // Sync font size with body class when settings change
+  useEffect(() => {
+    document.body.classList.remove('font-small', 'font-medium', 'font-large');
+    document.body.classList.add(`font-${settings.fontSize}`);
+  }, [settings.fontSize]);
 
   const tabs = [
+    { id: 'dashboard', icon: FiBarChart2, label: 'Dashboard' },
     { id: 'general', icon: FiSliders, label: 'General' },
     { id: 'appearance', icon: FiEye, label: 'Appearance' },
     { id: 'privacy', icon: FiLock, label: 'Privacy' },
@@ -35,6 +43,12 @@ const SettingsPanel = ({ onClose }) => {
 
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
+  };
+  
+  const handleResetSettings = () => {
+    if (window.confirm('Are you sure you want to reset all settings to defaults?')) {
+      resetSettings();
+    }
   };
 
   return (
@@ -46,7 +60,7 @@ const SettingsPanel = ({ onClose }) => {
       className={`settings-panel ${theme}`}
     >
       <div className="settings-header">
-        <h2 className="settings-title">Settings</h2>
+        <h2 className="settings-title">{activeTab === 'dashboard' ? 'Dashboard' : 'Settings'}</h2>
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -72,10 +86,13 @@ const SettingsPanel = ({ onClose }) => {
         </div>
 
         <div className="settings-body">
+          {activeTab === 'dashboard' && (
+            <Dashboard inPanel={true} />
+          )}
+
           {activeTab === 'general' && (
             <div className="settings-section">
               <h3>General Settings</h3>
-              
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Auto-scroll to bottom</div>
@@ -120,13 +137,18 @@ const SettingsPanel = ({ onClose }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
+              
+              <div className="setting-item action" style={{ marginTop: '1.5rem' }}>
+                <button className="danger-button" onClick={handleResetSettings}>
+                  Reset All Settings
+                </button>
+              </div>
             </div>
           )}
 
           {activeTab === 'appearance' && (
             <div className="settings-section">
               <h3>Appearance</h3>
-              
               <div className="setting-item vertical">
                 <div className="setting-label">Theme</div>
                 <div className="theme-options">
@@ -183,13 +205,27 @@ const SettingsPanel = ({ onClose }) => {
                   </select>
                 </div>
               </div>
+
+              <div className="setting-item">
+                <div className="setting-info">
+                  <div className="setting-label">Use animations</div>
+                  <div className="setting-description">Enable animations throughout the interface</div>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={settings.useAnimations}
+                    onChange={(e) => updateSettings({ useAnimations: e.target.checked })}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
             </div>
           )}
 
           {activeTab === 'privacy' && (
             <div className="settings-section">
               <h3>Privacy Settings</h3>
-              
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Save chat history</div>
@@ -231,7 +267,6 @@ const SettingsPanel = ({ onClose }) => {
           {activeTab === 'notifications' && (
             <div className="settings-section">
               <h3>Notifications</h3>
-              
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Enable notifications</div>
@@ -261,13 +296,27 @@ const SettingsPanel = ({ onClose }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
+
+              <div className="setting-item">
+                <div className="setting-info">
+                  <div className="setting-label">Desktop notifications</div>
+                  <div className="setting-description">Show desktop notifications when app is in background</div>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={settings.desktopNotifications}
+                    onChange={(e) => updateSettings({ desktopNotifications: e.target.checked })}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
             </div>
           )}
 
           {activeTab === 'advanced' && (
             <div className="settings-section">
               <h3>Advanced Settings</h3>
-              
               <div className="setting-item vertical">
                 <div className="setting-label">API Endpoint</div>
                 <input
@@ -280,11 +329,10 @@ const SettingsPanel = ({ onClose }) => {
               </div>
 
               <h4>Model Parameters</h4>
-              
               <div className="setting-item vertical">
                 <div className="setting-info">
                   <div className="setting-label">Temperature: {settings.modelParameters.temperature}</div>
-                  <div className="setting-description">Controls randomness (0 = deterministic, 1 = creative)</div>
+                  <div className="setting-description">Controls randomness (0=deterministic, 1=creative)</div>
                 </div>
                 <input
                   type="range"
@@ -327,6 +375,21 @@ const SettingsPanel = ({ onClose }) => {
                   onChange={(e) => updateModelParameter('maxTokens', parseInt(e.target.value))}
                   className="slider-input"
                 />
+              </div>
+              
+              <div className="setting-item">
+                <div className="setting-info">
+                  <div className="setting-label">Stream responses</div>
+                  <div className="setting-description">Show responses as they are being generated</div>
+                </div>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={settings.streamResponses}
+                    onChange={(e) => updateSettings({ streamResponses: e.target.checked })}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
               </div>
             </div>
           )}

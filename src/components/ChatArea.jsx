@@ -14,9 +14,16 @@ const { FiUploadCloud } = FiIcons;
 
 const ChatArea = () => {
   const { theme } = useTheme();
-  const { activeConversation, isTyping, messagesEndRef, scrollToBottom, addMessage } = useChat();
+  const { 
+    activeConversation, 
+    isTyping, 
+    messagesEndRef, 
+    scrollToBottom,
+    addMessage
+  } = useChat();
   const [isDragging, setIsDragging] = useState(false);
   const dropzoneRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     scrollToBottom();
@@ -38,11 +45,42 @@ const ChatArea = () => {
           url: URL.createObjectURL(file)
         }
       };
-      
+
       addMessage(fileMessage);
     });
-    
     setIsDragging(false);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleMessageDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const data = JSON.parse(e.dataTransfer.getData('application/json'));
+      if (data.type === 'message') {
+        // Handle dropped message
+        const newMessage = {
+          id: Date.now().toString(),
+          type: 'user',
+          content: `Regarding: "${data.content.substring(0, 50)}${data.content.length > 50 ? '...' : ''}"`,
+          timestamp: new Date().toISOString(),
+          referencedMessageId: data.messageId
+        };
+        
+        addMessage(newMessage);
+      }
+    } catch (err) {
+      // If not a message, check if it's a file
+      if (e.dataTransfer.files.length > 0) {
+        handleFileDrop(e.dataTransfer.files);
+      }
+    }
   };
 
   if (!activeConversation) {
@@ -52,32 +90,31 @@ const ChatArea = () => {
   return (
     <div 
       className={`chat-area ${theme}`}
-      onDragEnter={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(true);
-      }}
+      onDragEnter={handleDragOver}
+      onDragOver={handleDragOver}
+      onDrop={handleMessageDrop}
+      ref={chatContainerRef}
     >
-      <div className="messages-container">
+      <div className="messages-container" onDragOver={(e) => e.preventDefault()}>
         <AnimatePresence>
           {activeConversation.messages.map((message, index) => (
-            <MessageBubble
-              key={message.id}
-              message={message}
-              index={index}
+            <MessageBubble 
+              key={message.id} 
+              message={message} 
+              index={index} 
+              isLastMessage={index === activeConversation.messages.length - 1}
             />
           ))}
         </AnimatePresence>
         
         {isTyping && <TypingIndicator />}
-        
         <div ref={messagesEndRef} />
       </div>
 
       <AnimatePresence>
         {isDragging && (
           <FileDropzone 
-            onDragLeave={() => setIsDragging(false)}
+            onDragLeave={() => setIsDragging(false)} 
             onDrop={handleFileDrop}
             ref={dropzoneRef}
           />

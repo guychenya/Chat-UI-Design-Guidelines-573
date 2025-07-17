@@ -7,12 +7,12 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useSettings } from '../contexts/SettingsContext';
 import './InputArea.css';
 
-const { 
-  FiSend, 
-  FiPaperclip, 
-  FiMic, 
-  FiSquare, 
-  FiArrowUp, 
+const {
+  FiSend,
+  FiPaperclip,
+  FiMic,
+  FiSquare,
+  FiArrowUp,
   FiX,
   FiFile,
   FiImage,
@@ -29,10 +29,12 @@ const InputArea = () => {
   const [isListening, setIsListening] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [droppedItems, setDroppedItems] = useState([]);
+  const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const inputWrapperRef = useRef(null);
 
+  // Auto-resize textarea as content changes
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -42,8 +44,9 @@ const InputArea = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if ((!message.trim() && selectedFiles.length === 0 && droppedItems.length === 0) || !activeConversation) return;
-
+    
     // Handle file uploads first
     const allFiles = [...selectedFiles, ...droppedItems];
     if (allFiles.length > 0) {
@@ -74,25 +77,11 @@ const InputArea = () => {
         content: message.trim(),
         timestamp: new Date().toISOString(),
       };
-
+      
       addMessage(userMessage);
     }
-
+    
     setMessage('');
-    setIsTyping(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMessage = {
-        id: (Date.now() + 1).toString(),
-        type: 'ai',
-        content: `I understand you said: "${message.trim() || 'You sent a file'}". This is a simulated response. In a real implementation, this would be connected to an actual AI model API.`,
-        timestamp: new Date().toISOString(),
-      };
-      addMessage(aiMessage);
-      setIsTyping(false);
-      scrollToBottom();
-    }, 1500);
   };
 
   const handleKeyPress = (e) => {
@@ -103,8 +92,25 @@ const InputArea = () => {
   };
 
   const toggleVoiceInput = () => {
+    if (!isListening) {
+      startVoiceRecognition();
+    } else {
+      stopVoiceRecognition();
+    }
     setIsListening(!isListening);
-    // Voice input implementation would go here
+  };
+  
+  const startVoiceRecognition = () => {
+    // This would be implemented with the Web Speech API in a real app
+    console.log('Voice recognition started');
+    // Simulate recording
+    setTimeout(() => {
+      setMessage(prev => prev + (prev ? ' ' : '') + "This is simulated voice input text.");
+    }, 2000);
+  };
+  
+  const stopVoiceRecognition = () => {
+    console.log('Voice recognition stopped');
   };
 
   const handleFileButtonClick = () => {
@@ -150,7 +156,7 @@ const InputArea = () => {
     e.preventDefault();
     e.stopPropagation();
     inputWrapperRef.current?.classList.remove('drag-over');
-
+    
     try {
       const data = JSON.parse(e.dataTransfer.getData('application/json'));
       if (data.type === 'message') {
@@ -178,7 +184,7 @@ const InputArea = () => {
   if (!activeConversation) return null;
 
   return (
-    <div className={`input-area ${theme}`}>
+    <div className={`input-area ${theme} ${isFocused ? 'focused' : ''}`}>
       <div className="input-container">
         {/* Selected files preview */}
         {selectedFiles.length > 0 && (
@@ -197,17 +203,14 @@ const InputArea = () => {
                   )}
                   <div className="file-name">{file.name}</div>
                 </div>
-                <button 
-                  className="file-remove"
-                  onClick={() => removeFile(index)}
-                >
+                <button className="file-remove" onClick={() => removeFile(index)}>
                   <SafeIcon icon={FiX} />
                 </button>
               </div>
             ))}
           </div>
         )}
-
+        
         {/* Dropped items preview */}
         {droppedItems.length > 0 && (
           <div className="dropped-items">
@@ -223,7 +226,7 @@ const InputArea = () => {
                   <SafeIcon icon={getFileIcon(item.type)} />
                 </div>
                 <span className="dropped-item-name">{item.name}</span>
-                <button
+                <button 
                   className="dropped-item-remove"
                   onClick={() => removeDroppedItem(index)}
                 >
@@ -248,10 +251,11 @@ const InputArea = () => {
               type="button"
               className="attachment-btn"
               onClick={handleFileButtonClick}
+              title="Attach file"
             >
               <SafeIcon icon={FiPaperclip} />
             </motion.button>
-
+            
             <input
               type="file"
               ref={fileInputRef}
@@ -259,28 +263,31 @@ const InputArea = () => {
               className="file-input"
               multiple
             />
-
+            
             <textarea
               ref={textareaRef}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               placeholder="Type your message..."
               className="message-input"
               rows="1"
               disabled={!activeConversation}
             />
-
+            
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               type="button"
               onClick={toggleVoiceInput}
               className={`voice-btn ${isListening ? 'listening' : ''}`}
+              title={isListening ? "Stop recording" : "Voice input"}
             >
               <SafeIcon icon={isListening ? FiSquare : FiMic} />
             </motion.button>
-
+            
             <AnimatePresence>
               {(message.trim() || selectedFiles.length > 0 || droppedItems.length > 0) && (
                 <motion.button
@@ -291,6 +298,7 @@ const InputArea = () => {
                   whileTap={{ scale: 0.95 }}
                   type="submit"
                   className="send-btn"
+                  title="Send message"
                 >
                   <SafeIcon icon={FiArrowUp} />
                 </motion.button>
@@ -298,7 +306,7 @@ const InputArea = () => {
             </AnimatePresence>
           </div>
         </form>
-
+        
         <div className="input-footer">
           <p className="input-disclaimer">
             AI can make mistakes. Consider checking important information.
