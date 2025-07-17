@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import { useTheme } from '../contexts/ThemeContext';
@@ -11,8 +11,20 @@ import './SettingsPanel.css';
 const {
   FiX, FiUser, FiGlobe, FiEye, FiSliders, FiBell, FiLock,
   FiSun, FiMoon, FiMonitor, FiBarChart2, FiKey, FiCheck,
-  FiAlertTriangle, FiPlus, FiTrash2, FiEdit2, FiRefreshCw
+  FiAlertTriangle, FiPlus, FiTrash2, FiEdit2, FiRefreshCw,
+  FiChevronDown, FiChevronUp, FiMoreHorizontal, FiStar
 } = FiIcons;
+
+// Provider definitions with icons and colors
+const providers = [
+  { id: 'openai', name: 'OpenAI', color: '#00a67e', description: 'For ChatGPT and GPT-4 models' },
+  { id: 'anthropic', name: 'Anthropic', color: '#ff6b35', description: 'For Claude models' },
+  { id: 'gemini', name: 'Gemini', color: '#4285f4', description: 'Google\'s AI models' },
+  { id: 'ollama', name: 'Ollama', color: '#7c3aed', description: 'Local open-source models' },
+  { id: 'groq', name: 'Groq', color: '#e84142', description: 'Fast inference API' },
+  { id: 'mistral', name: 'Mistral', color: '#5f9ea0', description: 'Mistral AI models' },
+  { id: 'supabase', name: 'Supabase', color: '#3ecf8e', description: 'Format: projectUrl|anonKey' }
+];
 
 const SettingsPanel = ({ onClose, isMainView = false }) => {
   const { theme, setTheme } = useTheme();
@@ -22,6 +34,52 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
   const [newApiKeyValue, setNewApiKeyValue] = useState('');
   const [editingKeyId, setEditingKeyId] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState({});
+  const [expandedProvider, setExpandedProvider] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [notification, setNotification] = useState(null);
+  
+  // Map of provider IDs to their keys
+  const [providerKeys, setProviderKeys] = useState({});
+
+  // Organize keys by provider
+  useEffect(() => {
+    if (settings.apiKeys) {
+      const keysByProvider = {};
+      
+      // Initialize all providers with empty arrays
+      providers.forEach(provider => {
+        keysByProvider[provider.id] = [];
+      });
+      
+      // Group keys by provider
+      Object.entries(settings.apiKeys).forEach(([id, keyData]) => {
+        const providerId = (keyData.provider || keyData.name || '').toLowerCase();
+        if (keysByProvider[providerId]) {
+          keysByProvider[providerId].push({
+            id,
+            ...keyData,
+            isDefault: settings.defaultProviderId === id
+          });
+        } else {
+          // For unknown providers
+          if (!keysByProvider.other) keysByProvider.other = [];
+          keysByProvider.other.push({
+            id,
+            ...keyData,
+            isDefault: settings.defaultProviderId === id
+          });
+        }
+      });
+      
+      setProviderKeys(keysByProvider);
+    }
+  }, [settings.apiKeys, settings.defaultProviderId]);
+
+  // Show notification
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   // Sync font size with body class when settings change
   useEffect(() => {
@@ -60,27 +118,33 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
         provider: newApiKeyName.toLowerCase()
       });
       setEditingKeyId(null);
+      showNotification(`API key for ${newApiKeyName} updated successfully`);
     } else {
-      updateApiKey(Date.now().toString(), {
+      const newKeyId = Date.now().toString();
+      updateApiKey(newKeyId, {
         name: newApiKeyName,
         value: newApiKeyValue,
         provider: newApiKeyName.toLowerCase()
       });
+      showNotification(`API key for ${newApiKeyName} added successfully`);
     }
     
     setNewApiKeyName('');
     setNewApiKeyValue('');
+    setShowAddForm(false);
   };
 
   const handleEditApiKey = (id, name, value) => {
     setEditingKeyId(id);
     setNewApiKeyName(name);
     setNewApiKeyValue(value);
+    setShowAddForm(true);
   };
 
-  const handleDeleteApiKey = (id) => {
-    if (window.confirm('Are you sure you want to delete this API key?')) {
+  const handleDeleteApiKey = (id, name) => {
+    if (window.confirm(`Are you sure you want to delete this ${name} API key?`)) {
       removeApiKey(id);
+      showNotification(`API key for ${name} deleted`, 'error');
     }
   };
 
@@ -88,9 +152,10 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
     setEditingKeyId(null);
     setNewApiKeyName('');
     setNewApiKeyValue('');
+    setShowAddForm(false);
   };
 
-  const testConnection = async (keyId, provider) => {
+  const testConnection = async (keyId, provider, name) => {
     setConnectionStatus(prev => ({
       ...prev,
       [keyId]: 'testing'
@@ -108,36 +173,65 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
         [keyId]: result.success ? 'connected' : 'error'
       }));
       
-      // Clear status after 3 seconds
+      showNotification(
+        result.success 
+          ? `Successfully connected to ${name}` 
+          : `Failed to connect to ${name}: ${result.message || 'Unknown error'}`,
+        result.success ? 'success' : 'error'
+      );
+      
+      // Clear status after 5 seconds
       setTimeout(() => {
         setConnectionStatus(prev => {
           const newStatus = {...prev};
           delete newStatus[keyId];
           return newStatus;
         });
-      }, 3000);
+      }, 5000);
     } catch (error) {
       setConnectionStatus(prev => ({
         ...prev,
         [keyId]: 'error'
       }));
       
-      // Clear error status after 3 seconds
+      showNotification(`Connection error with ${name}: ${error.message || 'Unknown error'}`, 'error');
+      
+      // Clear error status after 5 seconds
       setTimeout(() => {
         setConnectionStatus(prev => {
           const newStatus = {...prev};
           delete newStatus[keyId];
           return newStatus;
         });
-      }, 3000);
+      }, 5000);
     }
   };
 
-  const handleSetDefault = (id) => {
+  const handleSetDefault = (id, name) => {
     setDefaultProvider(id);
+    showNotification(`${name} set as default provider`);
+  };
+
+  const toggleProviderExpand = (providerId) => {
+    setExpandedProvider(expandedProvider === providerId ? null : providerId);
   };
 
   const containerClassName = isMainView ? `settings-panel-main ${theme}` : `settings-panel ${theme}`;
+
+  const getProviderLogo = (providerId) => {
+    // You could replace this with actual provider logos
+    return (
+      <div 
+        className="provider-logo" 
+        style={{ 
+          backgroundColor: providers.find(p => p.id === providerId)?.color || '#6b7280',
+          color: 'white'
+        }}
+      >
+        {providerId.substring(0, 1).toUpperCase()}
+      </div>
+    );
+  };
 
   return (
     <div className={containerClassName}>
@@ -170,6 +264,24 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
         </div>
 
         <div className="settings-body">
+          {/* Notification system */}
+          <AnimatePresence>
+            {notification && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className={`notification ${notification.type}`}
+              >
+                <SafeIcon 
+                  icon={notification.type === 'success' ? FiCheck : FiAlertTriangle} 
+                  className="notification-icon" 
+                />
+                <span>{notification.message}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {activeTab === 'general' && (
             <div className="settings-section">
               <h3>General Settings</h3>
@@ -480,127 +592,241 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
               
               <div className="api-keys-description">
                 <p>Manage your API keys for different AI providers. Set a default provider for your chats.</p>
-                <div className="provider-info-box">
-                  <h4>Supported Providers</h4>
-                  <ul className="provider-list">
-                    <li><strong>OpenAI</strong> - For ChatGPT and GPT-4</li>
-                    <li><strong>Anthropic</strong> - For Claude models</li>
-                    <li><strong>Gemini</strong> - Google's AI models</li>
-                    <li><strong>Ollama</strong> - Local open-source models</li>
-                    <li><strong>Groq</strong> - Fast inference API</li>
-                    <li><strong>Mistral</strong> - Mistral AI models</li>
-                    <li><strong>Supabase</strong> - For Supabase AI integration (format: projectUrl|anonKey)</li>
-                  </ul>
-                </div>
               </div>
 
-              <form onSubmit={handleApiKeySubmit} className="api-key-form">
-                <div className="setting-item vertical">
-                  <div className="setting-label">{editingKeyId ? 'Edit' : 'Add'} API Key</div>
-                  <input
-                    type="text"
-                    value={newApiKeyName}
-                    onChange={(e) => setNewApiKeyName(e.target.value)}
-                    className="settings-input"
-                    placeholder="Provider Name (OpenAI, Claude, Gemini, etc.)"
-                    required
-                  />
-                  <div className="api-key-input-wrapper">
-                    <input
-                      type="password"
-                      value={newApiKeyValue}
-                      onChange={(e) => setNewApiKeyValue(e.target.value)}
-                      className="settings-input"
-                      placeholder="API Key Value"
-                      required
-                    />
-                  </div>
-                  <div className="api-key-actions">
-                    <button type="submit" className="api-key-button primary">
-                      {editingKeyId ? 'Update Key' : 'Add Key'}
-                    </button>
-                    {editingKeyId && (
-                      <button 
-                        type="button" 
-                        className="api-key-button secondary"
-                        onClick={handleCancelEdit}
-                      >
-                        Cancel
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </form>
+              {/* Add new key button */}
+              <div className="api-key-actions-top">
+                <button 
+                  className="api-key-button primary" 
+                  onClick={() => {
+                    setShowAddForm(!showAddForm);
+                    if (editingKeyId) {
+                      setEditingKeyId(null);
+                      setNewApiKeyName('');
+                      setNewApiKeyValue('');
+                    }
+                  }}
+                >
+                  <SafeIcon icon={showAddForm ? FiX : FiPlus} />
+                  {showAddForm ? 'Cancel' : 'Add New API Key'}
+                </button>
+              </div>
 
-              <h4>Saved API Keys</h4>
-              {settings.apiKeys && Object.keys(settings.apiKeys).length > 0 ? (
-                <div className="api-keys-list">
-                  {Object.entries(settings.apiKeys).map(([id, keyData]) => (
-                    <div key={id} className="api-key-item">
-                      <div className="api-key-info">
-                        <div className="api-key-provider">
-                          {keyData.name}
-                          {settings.defaultProviderId === id && (
-                            <span className="default-badge">Default</span>
-                          )}
-                        </div>
-                        <div className="api-key-value">••••••••••••{keyData.value.slice(-4)}</div>
-                      </div>
-                      <div className="api-key-item-actions">
-                        <div className="connection-status">
-                          {connectionStatus[id] === 'testing' && (
-                            <span className="status testing">Testing...</span>
-                          )}
-                          {connectionStatus[id] === 'connected' && (
-                            <span className="status connected">
-                              <SafeIcon icon={FiCheck} /> Connected
-                            </span>
-                          )}
-                          {connectionStatus[id] === 'error' && (
-                            <span className="status error">
-                              <SafeIcon icon={FiAlertTriangle} /> Error
-                            </span>
-                          )}
-                        </div>
-                        <button 
-                          className="api-key-action-btn"
-                          onClick={() => testConnection(id, keyData.provider || keyData.name.toLowerCase())}
-                          title="Test connection"
-                        >
-                          <SafeIcon icon={FiRefreshCw} />
-                        </button>
-                        <button 
-                          className="api-key-action-btn"
-                          onClick={() => handleEditApiKey(id, keyData.name, keyData.value)}
-                          title="Edit"
-                        >
-                          <SafeIcon icon={FiEdit2} />
-                        </button>
-                        <button 
-                          className="api-key-action-btn delete"
-                          onClick={() => handleDeleteApiKey(id)}
-                          title="Delete"
-                        >
-                          <SafeIcon icon={FiTrash2} />
-                        </button>
-                        {settings.defaultProviderId !== id && (
-                          <button 
-                            className="api-key-action-btn set-default"
-                            onClick={() => handleSetDefault(id)}
-                            title="Set as default"
+              {/* Add/Edit form */}
+              <AnimatePresence>
+                {showAddForm && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <form onSubmit={handleApiKeySubmit} className="api-key-form">
+                      <div className="setting-item vertical">
+                        <div className="setting-label">{editingKeyId ? 'Edit' : 'Add'} API Key</div>
+                        <div className="select-wrapper">
+                          <select
+                            value={newApiKeyName}
+                            onChange={(e) => setNewApiKeyName(e.target.value)}
+                            className="settings-select"
+                            required
                           >
-                            Set Default
+                            <option value="">Select Provider</option>
+                            {providers.map(provider => (
+                              <option key={provider.id} value={provider.name}>
+                                {provider.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="api-key-input-wrapper">
+                          <input
+                            type="password"
+                            value={newApiKeyValue}
+                            onChange={(e) => setNewApiKeyValue(e.target.value)}
+                            className="settings-input"
+                            placeholder={`Enter ${newApiKeyName || 'provider'} API Key`}
+                            required
+                          />
+                          {newApiKeyName.toLowerCase() === 'supabase' && (
+                            <div className="api-key-format-help">
+                              Format: projectUrl|anonKey
+                            </div>
+                          )}
+                        </div>
+                        <div className="api-key-actions">
+                          <button type="submit" className="api-key-button primary">
+                            {editingKeyId ? 'Update Key' : 'Add Key'}
                           </button>
-                        )}
+                          {editingKeyId && (
+                            <button 
+                              type="button" 
+                              className="api-key-button secondary"
+                              onClick={handleCancelEdit}
+                            >
+                              Cancel
+                            </button>
+                          )}
+                        </div>
                       </div>
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <h4>Provider API Keys</h4>
+              <div className="providers-list">
+                {providers.map(provider => {
+                  const providerKeysList = providerKeys[provider.id] || [];
+                  const hasKeys = providerKeysList.length > 0;
+                  const isExpanded = expandedProvider === provider.id;
+                  
+                  return (
+                    <div 
+                      key={provider.id} 
+                      className={`provider-item ${hasKeys ? 'has-keys' : ''} ${isExpanded ? 'expanded' : ''}`}
+                    >
+                      <div 
+                        className="provider-header"
+                        onClick={() => hasKeys && toggleProviderExpand(provider.id)}
+                      >
+                        <div className="provider-info">
+                          <div 
+                            className="provider-logo" 
+                            style={{ backgroundColor: provider.color }}
+                          >
+                            {provider.id.substring(0, 1).toUpperCase()}
+                          </div>
+                          <div className="provider-details">
+                            <div className="provider-name">{provider.name}</div>
+                            <div className="provider-description">{provider.description}</div>
+                          </div>
+                        </div>
+                        
+                        <div className="provider-summary">
+                          {hasKeys ? (
+                            <>
+                              <span className="key-count">
+                                {providerKeysList.length} key{providerKeysList.length !== 1 ? 's' : ''}
+                              </span>
+                              {providerKeysList.some(key => key.isDefault) && (
+                                <span className="default-provider-badge">
+                                  <SafeIcon icon={FiStar} /> Default
+                                </span>
+                              )}
+                              <SafeIcon 
+                                icon={isExpanded ? FiChevronUp : FiChevronDown} 
+                                className="expand-icon" 
+                              />
+                            </>
+                          ) : (
+                            <button 
+                              className="add-key-button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setNewApiKeyName(provider.name);
+                                setShowAddForm(true);
+                              }}
+                            >
+                              <SafeIcon icon={FiPlus} /> Add Key
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Expandable section */}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="provider-keys"
+                          >
+                            {providerKeysList.map((keyData) => (
+                              <div key={keyData.id} className="api-key-item">
+                                <div className="api-key-info">
+                                  <div className="key-label">API Key</div>
+                                  <div className="api-key-value">••••••••••••{keyData.value.slice(-4)}</div>
+                                </div>
+                                <div className="api-key-actions-container">
+                                  <div className="connection-status">
+                                    {connectionStatus[keyData.id] === 'testing' && (
+                                      <span className="status testing">Testing...</span>
+                                    )}
+                                    {connectionStatus[keyData.id] === 'connected' && (
+                                      <span className="status connected">
+                                        <SafeIcon icon={FiCheck} /> Connected
+                                      </span>
+                                    )}
+                                    {connectionStatus[keyData.id] === 'error' && (
+                                      <span className="status error">
+                                        <SafeIcon icon={FiAlertTriangle} /> Error
+                                      </span>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="api-key-buttons">
+                                    {/* Primary actions */}
+                                    {!keyData.isDefault && (
+                                      <button 
+                                        className="api-key-action-btn set-default"
+                                        onClick={() => handleSetDefault(keyData.id, keyData.name)}
+                                        title="Set as default provider"
+                                      >
+                                        <SafeIcon icon={FiStar} /> Set Default
+                                      </button>
+                                    )}
+                                    
+                                    <button 
+                                      className="api-key-action-btn"
+                                      onClick={() => testConnection(keyData.id, keyData.provider || provider.id, keyData.name)}
+                                      title="Test connection"
+                                    >
+                                      <SafeIcon icon={FiRefreshCw} /> Test
+                                    </button>
+                                    
+                                    {/* Dropdown for more actions */}
+                                    <div className="more-actions-dropdown">
+                                      <button className="more-actions-btn">
+                                        <SafeIcon icon={FiMoreHorizontal} />
+                                      </button>
+                                      <div className="more-actions-menu">
+                                        <button 
+                                          onClick={() => handleEditApiKey(keyData.id, keyData.name, keyData.value)}
+                                          className="more-action-item"
+                                        >
+                                          <SafeIcon icon={FiEdit2} /> Edit
+                                        </button>
+                                        <button 
+                                          onClick={() => handleDeleteApiKey(keyData.id, keyData.name)}
+                                          className="more-action-item delete"
+                                        >
+                                          <SafeIcon icon={FiTrash2} /> Delete
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="no-keys-message">
-                  No API keys added yet. Add your first key above.
-                </div>
-              )}
+                  );
+                })}
+                
+                {/* Show message if no keys */}
+                {Object.values(providerKeys).flat().length === 0 && (
+                  <div className="no-keys-message">
+                    <SafeIcon icon={FiKey} className="no-keys-icon" />
+                    <p>No API keys added yet</p>
+                    <p className="no-keys-help">Add your first API key using the button above</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
