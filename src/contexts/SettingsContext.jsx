@@ -27,21 +27,21 @@ export const SettingsProvider = ({ children }) => {
     autoScrollToBottom: true,
     sendOnEnter: true,
     showTimestamps: true,
-
+    
     // Appearance
     fontSize: 'medium', // small, medium, large
     messageDensity: 'comfortable', // compact, comfortable, spacious
     useAnimations: true,
-
+    
     // Privacy
     saveHistory: true,
     shareAnonymousData: false,
-
+    
     // Notifications
     enableNotifications: true,
     notificationSound: true,
     desktopNotifications: false,
-
+    
     // Advanced
     apiEndpoint: 'https://api.example.com/v1',
     streamResponses: true,
@@ -49,7 +49,11 @@ export const SettingsProvider = ({ children }) => {
       temperature: 0.7,
       topP: 0.9,
       maxTokens: 2048
-    }
+    },
+    
+    // API Keys
+    apiKeys: {},
+    defaultProviderId: null
   };
 
   const [settings, setSettings] = useState(() => {
@@ -86,14 +90,10 @@ export const SettingsProvider = ({ children }) => {
     // Add class to body for component-specific overrides
     document.body.classList.remove('font-small', 'font-medium', 'font-large');
     document.body.classList.add(`font-${settings.fontSize}`);
-    
   }, [settings.fontSize]);
 
   const updateSettings = (newSettings) => {
-    setSettings(prev => ({
-      ...prev,
-      ...newSettings
-    }));
+    setSettings(prev => ({ ...prev, ...newSettings }));
   };
 
   const updateModelParameter = (param, value) => {
@@ -110,13 +110,57 @@ export const SettingsProvider = ({ children }) => {
     setSettings(defaultSettings);
   };
 
+  // API Keys Management
+  const updateApiKey = (id, keyData) => {
+    setSettings(prev => ({
+      ...prev,
+      apiKeys: {
+        ...prev.apiKeys,
+        [id]: keyData
+      },
+      defaultProviderId: prev.defaultProviderId || id // Set as default if none is set
+    }));
+  };
+
+  const removeApiKey = (id) => {
+    setSettings(prev => {
+      const newApiKeys = { ...prev.apiKeys };
+      delete newApiKeys[id];
+      
+      // If we're removing the default provider, set a new default if possible
+      let newDefaultProvider = prev.defaultProviderId;
+      if (newDefaultProvider === id) {
+        const remainingKeys = Object.keys(newApiKeys);
+        newDefaultProvider = remainingKeys.length > 0 ? remainingKeys[0] : null;
+      }
+      
+      return {
+        ...prev,
+        apiKeys: newApiKeys,
+        defaultProviderId: newDefaultProvider
+      };
+    });
+  };
+
+  const setDefaultProvider = (id) => {
+    setSettings(prev => ({
+      ...prev,
+      defaultProviderId: id
+    }));
+  };
+
   return (
-    <SettingsContext.Provider value={{
-      settings,
-      updateSettings,
-      updateModelParameter,
-      resetSettings
-    }}>
+    <SettingsContext.Provider 
+      value={{
+        settings,
+        updateSettings,
+        updateModelParameter,
+        resetSettings,
+        updateApiKey,
+        removeApiKey,
+        setDefaultProvider
+      }}
+    >
       {children}
     </SettingsContext.Provider>
   );

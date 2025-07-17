@@ -14,7 +14,98 @@ const {
   FiInfo, FiHelpCircle
 } = FiIcons;
 
-// ... (previous component definitions remain the same) ...
+// Tooltip component
+const Tooltip = ({ content }) => {
+  return (
+    <div className="metric-tooltip">
+      <SafeIcon icon={FiInfo} className="tooltip-icon" />
+      <span className="tooltip-text">{content}</span>
+    </div>
+  );
+};
+
+// Progress Ring Component
+const ProgressRing = ({ value, color, label, icon, size = 160, description }) => {
+  const radius = size / 2;
+  const strokeWidth = size / 16;
+  const normalizedRadius = radius - strokeWidth / 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const strokeDashoffset = circumference - (value / 100) * circumference;
+
+  return (
+    <div className="progress-ring-container" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <circle
+          stroke="currentColor"
+          fill="transparent"
+          strokeOpacity="0.1"
+          strokeWidth={strokeWidth}
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+        />
+        <circle
+          stroke={color}
+          fill="transparent"
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference + ' ' + circumference}
+          style={{ strokeDashoffset }}
+          strokeLinecap="round"
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+          transform={`rotate(-90, ${radius}, ${radius})`}
+        />
+        <text
+          x="50%"
+          y="40%"
+          dominantBaseline="middle"
+          textAnchor="middle"
+          fontSize={size / 6}
+          fontWeight="bold"
+          fill={color}
+        >
+          {value}%
+        </text>
+      </svg>
+      <div className="progress-ring-content">
+        <div className="progress-ring-label">
+          {icon && <SafeIcon icon={icon} />} {label}
+          {description && <Tooltip content={description} />}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Progress Bar Component
+const ProgressBar = ({ value, label, icon, description }) => {
+  return (
+    <div className="progress-bar-container">
+      <div className="progress-bar-header">
+        <div className="progress-bar-icon">
+          <SafeIcon icon={icon} />
+        </div>
+        <div className="progress-bar-label-group">
+          <div className="progress-bar-label">
+            {label}
+            {description && <Tooltip content={description} />}
+          </div>
+        </div>
+        <div className="progress-bar-value">{value}%</div>
+      </div>
+      <div className="progress-bar-track">
+        <div
+          className="progress-bar-fill"
+          style={{
+            width: `${value}%`,
+            background: `linear-gradient(90deg, #3b82f6 ${value * 0.6}%, #8b5cf6 ${value * 1.2}%)`,
+          }}
+        ></div>
+      </div>
+    </div>
+  );
+};
 
 const Dashboard = ({ inPanel = false }) => {
   const { theme } = useTheme();
@@ -24,7 +115,7 @@ const Dashboard = ({ inPanel = false }) => {
   const [logicalResonance, setLogicalResonance] = useState(82);
   const [temperature, setTemperature] = useState(settings.modelParameters.temperature);
   
-  // Add the missing handleTemperatureChange function
+  // Define the handleTemperatureChange function
   const handleTemperatureChange = (value) => {
     setTemperature(value);
     updateModelParameter('temperature', value);

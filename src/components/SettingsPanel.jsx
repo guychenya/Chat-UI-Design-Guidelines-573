@@ -8,23 +8,19 @@ import Dashboard from './Dashboard';
 import './SettingsPanel.css';
 
 const {
-  FiX,
-  FiUser,
-  FiGlobe,
-  FiEye,
-  FiSliders,
-  FiBell,
-  FiLock,
-  FiSun,
-  FiMoon,
-  FiMonitor,
-  FiBarChart2
+  FiX, FiUser, FiGlobe, FiEye, FiSliders, FiBell, FiLock,
+  FiSun, FiMoon, FiMonitor, FiBarChart2, FiKey, FiCheck,
+  FiAlertTriangle, FiPlus, FiTrash2, FiEdit2, FiRefreshCw
 } = FiIcons;
 
 const SettingsPanel = ({ onClose, isMainView = false }) => {
   const { theme, setTheme } = useTheme();
-  const { settings, updateSettings, updateModelParameter, resetSettings } = useSettings();
+  const { settings, updateSettings, updateModelParameter, resetSettings, updateApiKey, removeApiKey, setDefaultProvider } = useSettings();
   const [activeTab, setActiveTab] = useState('general');
+  const [newApiKeyName, setNewApiKeyName] = useState('');
+  const [newApiKeyValue, setNewApiKeyValue] = useState('');
+  const [editingKeyId, setEditingKeyId] = useState(null);
+  const [connectionStatus, setConnectionStatus] = useState({});
 
   // Sync font size with body class when settings change
   useEffect(() => {
@@ -38,6 +34,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
     { id: 'privacy', icon: FiLock, label: 'Privacy' },
     { id: 'notifications', icon: FiBell, label: 'Notifications' },
     { id: 'advanced', icon: FiGlobe, label: 'Advanced' },
+    { id: 'apikeys', icon: FiKey, label: 'API Keys' },
   ];
 
   const handleThemeChange = (newTheme) => {
@@ -50,9 +47,79 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
     }
   };
 
-  const containerClassName = isMainView 
-    ? `settings-panel-main ${theme}` 
-    : `settings-panel ${theme}`;
+  const handleApiKeySubmit = (e) => {
+    e.preventDefault();
+    
+    if (!newApiKeyName || !newApiKeyValue) return;
+    
+    if (editingKeyId) {
+      updateApiKey(editingKeyId, {
+        name: newApiKeyName,
+        value: newApiKeyValue
+      });
+      setEditingKeyId(null);
+    } else {
+      updateApiKey(Date.now().toString(), {
+        name: newApiKeyName,
+        value: newApiKeyValue,
+        provider: newApiKeyName.toLowerCase()
+      });
+    }
+    
+    setNewApiKeyName('');
+    setNewApiKeyValue('');
+  };
+
+  const handleEditApiKey = (id, name, value) => {
+    setEditingKeyId(id);
+    setNewApiKeyName(name);
+    setNewApiKeyValue(value);
+  };
+
+  const handleDeleteApiKey = (id) => {
+    if (window.confirm('Are you sure you want to delete this API key?')) {
+      removeApiKey(id);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingKeyId(null);
+    setNewApiKeyName('');
+    setNewApiKeyValue('');
+  };
+
+  const testConnection = async (keyId, provider) => {
+    setConnectionStatus(prev => ({
+      ...prev,
+      [keyId]: 'testing'
+    }));
+    
+    // Simulate API connection test
+    setTimeout(() => {
+      // Randomly succeed or fail for demonstration
+      const success = Math.random() > 0.3;
+      
+      setConnectionStatus(prev => ({
+        ...prev,
+        [keyId]: success ? 'connected' : 'error'
+      }));
+      
+      // Clear status after 3 seconds
+      setTimeout(() => {
+        setConnectionStatus(prev => {
+          const newStatus = {...prev};
+          delete newStatus[keyId];
+          return newStatus;
+        });
+      }, 3000);
+    }, 1500);
+  };
+
+  const handleSetDefault = (id) => {
+    setDefaultProvider(id);
+  };
+
+  const containerClassName = isMainView ? `settings-panel-main ${theme}` : `settings-panel ${theme}`;
 
   return (
     <div className={containerClassName}>
@@ -69,7 +136,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
           </motion.button>
         )}
       </div>
-      
+
       <div className="settings-content">
         <div className="settings-tabs">
           {tabs.map(tab => (
@@ -83,7 +150,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
             </button>
           ))}
         </div>
-        
+
         <div className="settings-body">
           {activeTab === 'general' && (
             <div className="settings-section">
@@ -102,7 +169,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-              
+
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Send on Enter</div>
@@ -117,7 +184,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-              
+
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Show timestamps</div>
@@ -132,7 +199,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-              
+
               <div className="setting-item action" style={{ marginTop: '1.5rem' }}>
                 <button className="danger-button" onClick={handleResetSettings}>
                   Reset All Settings
@@ -140,7 +207,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
               </div>
             </div>
           )}
-          
+
           {activeTab === 'appearance' && (
             <div className="settings-section">
               <h3>Appearance</h3>
@@ -170,7 +237,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   </button>
                 </div>
               </div>
-              
+
               <div className="setting-item vertical">
                 <div className="setting-label">Font Size</div>
                 <div className="select-wrapper">
@@ -185,7 +252,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   </select>
                 </div>
               </div>
-              
+
               <div className="setting-item vertical">
                 <div className="setting-label">Message Density</div>
                 <div className="select-wrapper">
@@ -200,7 +267,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   </select>
                 </div>
               </div>
-              
+
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Use animations</div>
@@ -217,7 +284,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
               </div>
             </div>
           )}
-          
+
           {activeTab === 'privacy' && (
             <div className="settings-section">
               <h3>Privacy Settings</h3>
@@ -235,7 +302,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-              
+
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Share anonymous data</div>
@@ -250,7 +317,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-              
+
               <div className="setting-item action">
                 <button className="danger-button">
                   Delete All Conversations
@@ -258,7 +325,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
               </div>
             </div>
           )}
-          
+
           {activeTab === 'notifications' && (
             <div className="settings-section">
               <h3>Notifications</h3>
@@ -276,7 +343,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-              
+
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Notification sounds</div>
@@ -291,7 +358,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-              
+
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Desktop notifications</div>
@@ -308,7 +375,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
               </div>
             </div>
           )}
-          
+
           {activeTab === 'advanced' && (
             <div className="settings-section">
               <h3>Advanced Settings</h3>
@@ -322,7 +389,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   placeholder="https://api.example.com/v1"
                 />
               </div>
-              
+
               <h4>Model Parameters</h4>
               <div className="setting-item vertical">
                 <div className="setting-info">
@@ -339,7 +406,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   className="slider-input"
                 />
               </div>
-              
+
               <div className="setting-item vertical">
                 <div className="setting-info">
                   <div className="setting-label">Top P: {settings.modelParameters.topP}</div>
@@ -355,7 +422,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   className="slider-input"
                 />
               </div>
-              
+
               <div className="setting-item vertical">
                 <div className="setting-info">
                   <div className="setting-label">Max Tokens: {settings.modelParameters.maxTokens}</div>
@@ -371,7 +438,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   className="slider-input"
                 />
               </div>
-              
+
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Stream responses</div>
@@ -386,6 +453,124 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'apikeys' && (
+            <div className="settings-section">
+              <h3>API Keys Management</h3>
+              
+              <div className="api-keys-description">
+                <p>Manage your API keys for different AI providers. Set a default provider for your chats.</p>
+              </div>
+
+              <form onSubmit={handleApiKeySubmit} className="api-key-form">
+                <div className="setting-item vertical">
+                  <div className="setting-label">{editingKeyId ? 'Edit' : 'Add'} API Key</div>
+                  <input
+                    type="text"
+                    value={newApiKeyName}
+                    onChange={(e) => setNewApiKeyName(e.target.value)}
+                    className="settings-input"
+                    placeholder="Provider Name (Ollama, Claude, Gemini, etc.)"
+                    required
+                  />
+                  <div className="api-key-input-wrapper">
+                    <input
+                      type="password"
+                      value={newApiKeyValue}
+                      onChange={(e) => setNewApiKeyValue(e.target.value)}
+                      className="settings-input"
+                      placeholder="API Key Value"
+                      required
+                    />
+                  </div>
+                  <div className="api-key-actions">
+                    <button type="submit" className="api-key-button primary">
+                      {editingKeyId ? 'Update Key' : 'Add Key'}
+                    </button>
+                    {editingKeyId && (
+                      <button 
+                        type="button" 
+                        className="api-key-button secondary"
+                        onClick={handleCancelEdit}
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </form>
+
+              <h4>Saved API Keys</h4>
+              {settings.apiKeys && Object.keys(settings.apiKeys).length > 0 ? (
+                <div className="api-keys-list">
+                  {Object.entries(settings.apiKeys).map(([id, keyData]) => (
+                    <div key={id} className="api-key-item">
+                      <div className="api-key-info">
+                        <div className="api-key-provider">
+                          {keyData.name}
+                          {settings.defaultProviderId === id && (
+                            <span className="default-badge">Default</span>
+                          )}
+                        </div>
+                        <div className="api-key-value">••••••••••••{keyData.value.slice(-4)}</div>
+                      </div>
+                      <div className="api-key-item-actions">
+                        <div className="connection-status">
+                          {connectionStatus[id] === 'testing' && (
+                            <span className="status testing">Testing...</span>
+                          )}
+                          {connectionStatus[id] === 'connected' && (
+                            <span className="status connected">
+                              <SafeIcon icon={FiCheck} /> Connected
+                            </span>
+                          )}
+                          {connectionStatus[id] === 'error' && (
+                            <span className="status error">
+                              <SafeIcon icon={FiAlertTriangle} /> Error
+                            </span>
+                          )}
+                        </div>
+                        <button 
+                          className="api-key-action-btn"
+                          onClick={() => testConnection(id, keyData.provider)}
+                          title="Test connection"
+                        >
+                          <SafeIcon icon={FiRefreshCw} />
+                        </button>
+                        <button 
+                          className="api-key-action-btn"
+                          onClick={() => handleEditApiKey(id, keyData.name, keyData.value)}
+                          title="Edit"
+                        >
+                          <SafeIcon icon={FiEdit2} />
+                        </button>
+                        <button 
+                          className="api-key-action-btn delete"
+                          onClick={() => handleDeleteApiKey(id)}
+                          title="Delete"
+                        >
+                          <SafeIcon icon={FiTrash2} />
+                        </button>
+                        {settings.defaultProviderId !== id && (
+                          <button 
+                            className="api-key-action-btn set-default"
+                            onClick={() => handleSetDefault(id)}
+                            title="Set as default"
+                          >
+                            Set Default
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="no-keys-message">
+                  No API keys added yet. Add your first key above.
+                </div>
+              )}
             </div>
           )}
         </div>

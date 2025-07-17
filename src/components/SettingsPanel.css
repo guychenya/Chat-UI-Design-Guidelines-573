@@ -1,5 +1,4 @@
-.settings-panel,
-.settings-panel-main {
+.settings-panel, .settings-panel-main {
   display: flex;
   flex-direction: column;
   z-index: 200;
@@ -20,24 +19,22 @@
   height: 100%;
 }
 
-.settings-panel.dark,
-.settings-panel-main.dark {
-  background: rgba(15, 23, 42, 0.98);
+.settings-panel.dark, .settings-panel-main.dark {
+  background: rgba(15,23,42,0.98);
   color: #e2e8f0;
 }
 
-.settings-panel.light,
-.settings-panel-main.light {
-  background: rgba(248, 250, 252, 0.98);
+.settings-panel.light, .settings-panel-main.light {
+  background: rgba(248,250,252,0.98);
   color: #1e293b;
 }
 
 .settings-panel.dark {
-  border-color: rgba(51, 65, 85, 0.3);
+  border-color: rgba(51,65,85,0.3);
 }
 
 .settings-panel.light {
-  border-color: rgba(203, 213, 225, 0.3);
+  border-color: rgba(203,213,225,0.3);
 }
 
 .settings-header {
@@ -48,14 +45,12 @@
   border-bottom: 1px solid;
 }
 
-.settings-panel.dark .settings-header,
-.settings-panel-main.dark .settings-header {
-  border-color: rgba(51, 65, 85, 0.3);
+.settings-panel.dark .settings-header, .settings-panel-main.dark .settings-header {
+  border-color: rgba(51,65,85,0.3);
 }
 
-.settings-panel.light .settings-header,
-.settings-panel-main.light .settings-header {
-  border-color: rgba(203, 213, 225, 0.3);
+.settings-panel.light .settings-header, .settings-panel-main.light .settings-header {
+  border-color: rgba(203,213,225,0.3);
 }
 
 .settings-title {
@@ -79,14 +74,12 @@
   color: inherit;
 }
 
-.settings-panel.dark .close-btn:hover,
-.settings-panel-main.dark .close-btn:hover {
-  background: rgba(51, 65, 85, 0.5);
+.settings-panel.dark .close-btn:hover, .settings-panel-main.dark .close-btn:hover {
+  background: rgba(51,65,85,0.5);
 }
 
-.settings-panel.light .close-btn:hover,
-.settings-panel-main.light .close-btn:hover {
-  background: rgba(203, 213, 225, 0.5);
+.settings-panel.light .close-btn:hover, .settings-panel-main.light .close-btn:hover {
+  background: rgba(203,213,225,0.5);
 }
 
 .settings-content {
@@ -102,14 +95,12 @@
   overflow-y: auto;
 }
 
-.settings-panel.dark .settings-tabs,
-.settings-panel-main.dark .settings-tabs {
-  border-color: rgba(51, 65, 85, 0.3);
+.settings-panel.dark .settings-tabs, .settings-panel-main.dark .settings-tabs {
+  border-color: rgba(51,65,85,0.3);
 }
 
-.settings-panel.light .settings-tabs,
-.settings-panel-main.light .settings-tabs {
-  border-color: rgba(203, 213, 225, 0.3);
+.settings-panel.light .settings-tabs, .settings-panel-main.light .settings-tabs {
+  border-color: rgba(203,213,225,0.3);
 }
 
 .settings-tab {
@@ -127,14 +118,12 @@
   color: inherit;
 }
 
-.settings-panel.dark .settings-tab:hover,
-.settings-panel-main.dark .settings-tab:hover {
-  background: rgba(51, 65, 85, 0.3);
+.settings-panel.dark .settings-tab:hover, .settings-panel-main.dark .settings-tab:hover {
+  background: rgba(51,65,85,0.3);
 }
 
-.settings-panel.light .settings-tab:hover,
-.settings-panel-main.light .settings-tab:hover {
-  background: rgba(203, 213, 225, 0.3);
+.settings-panel.light .settings-tab:hover, .settings-panel-main.light .settings-tab:hover {
+  background: rgba(203,213,225,0.3);
 }
 
 .settings-tab.active {
@@ -142,14 +131,12 @@
   position: relative;
 }
 
-.settings-panel.dark .settings-tab.active,
-.settings-panel-main.dark .settings-tab.active {
-  background: rgba(59, 130, 246, 0.15);
+.settings-panel.dark .settings-tab.active, .settings-panel-main.dark .settings-tab.active {
+  background: rgba(59,130,246,0.15);
 }
 
-.settings-panel.light .settings-tab.active,
-.settings-panel-main.light .settings-tab.active {
-  background: rgba(59, 130, 246, 0.1);
+.settings-panel.light .settings-tab.active, .settings-panel-main.light .settings-tab.active {
+  background: rgba(59,130,246,0.1);
 }
 
 .settings-tab.active::before {
@@ -181,14 +168,12 @@
   opacity: 0.8;
 }
 
-.settings-panel.dark .settings-section h3,
-.settings-panel-main.dark .settings-section h3 {
-  border-color: rgba(51, 65, 85, 0.3);
+.settings-panel.dark .settings-section h3, .settings-panel-main.dark .settings-section h3 {
+  border-color: rgba(51,65,85,0.3);
 }
 
-.settings-panel.light .settings-section h3,
-.settings-panel-main.light .settings-section h3 {
-  border-color: rgba(203, 213, 225, 0.3);
+.settings-panel.light .settings-section h3, .settings-panel-main.light .settings-section h3 {
+  border-color: rgba(203,213,225,0.3);
 }
 
 .settings-section h4 {
@@ -247,7 +232,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(100, 116, 139, 0.3);
+  background-color: rgba(100,116,139,0.3);
   transition: .3s;
   border-radius: 24px;
 }
@@ -282,24 +267,20 @@ input:checked + .toggle-slider:before {
   color: inherit;
 }
 
-.settings-panel.dark .settings-input,
-.settings-panel-main.dark .settings-input {
-  border-color: rgba(51, 65, 85, 0.5);
+.settings-panel.dark .settings-input, .settings-panel-main.dark .settings-input {
+  border-color: rgba(51,65,85,0.5);
 }
 
-.settings-panel.dark .settings-input:focus,
-.settings-panel-main.dark .settings-input:focus {
+.settings-panel.dark .settings-input:focus, .settings-panel-main.dark .settings-input:focus {
   border-color: #3b82f6;
   outline: none;
 }
 
-.settings-panel.light .settings-input,
-.settings-panel-main.light .settings-input {
-  border-color: rgba(203, 213, 225, 0.5);
+.settings-panel.light .settings-input, .settings-panel-main.light .settings-input {
+  border-color: rgba(203,213,225,0.5);
 }
 
-.settings-panel.light .settings-input:focus,
-.settings-panel-main.light .settings-input:focus {
+.settings-panel.light .settings-input:focus, .settings-panel-main.light .settings-input:focus {
   border-color: #3b82f6;
   outline: none;
 }
@@ -331,14 +312,12 @@ input:checked + .toggle-slider:before {
   color: inherit;
 }
 
-.settings-panel.dark .settings-select,
-.settings-panel-main.dark .settings-select {
-  border-color: rgba(51, 65, 85, 0.5);
+.settings-panel.dark .settings-select, .settings-panel-main.dark .settings-select {
+  border-color: rgba(51,65,85,0.5);
 }
 
-.settings-panel.light .settings-select,
-.settings-panel-main.light .settings-select {
-  border-color: rgba(203, 213, 225, 0.5);
+.settings-panel.light .settings-select, .settings-panel-main.light .settings-select {
+  border-color: rgba(203,213,225,0.5);
 }
 
 .settings-select:focus {
@@ -351,7 +330,7 @@ input:checked + .toggle-slider:before {
   height: 4px;
   border-radius: 2px;
   appearance: none;
-  background: rgba(100, 116, 139, 0.3);
+  background: rgba(100,116,139,0.3);
   outline: none;
 }
 
@@ -385,38 +364,32 @@ input:checked + .toggle-slider:before {
   color: inherit;
 }
 
-.settings-panel.dark .theme-option,
-.settings-panel-main.dark .theme-option {
-  border-color: rgba(51, 65, 85, 0.5);
+.settings-panel.dark .theme-option, .settings-panel-main.dark .theme-option {
+  border-color: rgba(51,65,85,0.5);
 }
 
-.settings-panel.dark .theme-option:hover,
-.settings-panel-main.dark .theme-option:hover {
-  background: rgba(51, 65, 85, 0.3);
+.settings-panel.dark .theme-option:hover, .settings-panel-main.dark .theme-option:hover {
+  background: rgba(51,65,85,0.3);
 }
 
-.settings-panel.light .theme-option,
-.settings-panel-main.light .theme-option {
-  border-color: rgba(203, 213, 225, 0.5);
+.settings-panel.light .theme-option, .settings-panel-main.light .theme-option {
+  border-color: rgba(203,213,225,0.5);
 }
 
-.settings-panel.light .theme-option:hover,
-.settings-panel-main.light .theme-option:hover {
-  background: rgba(203, 213, 225, 0.3);
+.settings-panel.light .theme-option:hover, .settings-panel-main.light .theme-option:hover {
+  background: rgba(203,213,225,0.3);
 }
 
 .theme-option.selected {
   border-color: #3b82f6;
 }
 
-.settings-panel.dark .theme-option.selected,
-.settings-panel-main.dark .theme-option.selected {
-  background: rgba(59, 130, 246, 0.15);
+.settings-panel.dark .theme-option.selected, .settings-panel-main.dark .theme-option.selected {
+  background: rgba(59,130,246,0.15);
 }
 
-.settings-panel.light .theme-option.selected,
-.settings-panel-main.light .theme-option.selected {
-  background: rgba(59, 130, 246, 0.1);
+.settings-panel.light .theme-option.selected, .settings-panel-main.light .theme-option.selected {
+  background: rgba(59,130,246,0.1);
 }
 
 .theme-option svg {
@@ -432,9 +405,9 @@ input:checked + .toggle-slider:before {
 .danger-button {
   width: 100%;
   padding: 0.75rem;
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239,68,68,0.1);
   color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239,68,68,0.3);
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -442,7 +415,208 @@ input:checked + .toggle-slider:before {
 }
 
 .danger-button:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239,68,68,0.2);
+}
+
+/* API Keys Tab Styles */
+.api-keys-description {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.api-key-form {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(100,116,139,0.05);
+}
+
+.settings-panel.dark .api-key-form {
+  background: rgba(51,65,85,0.2);
+}
+
+.api-key-input-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.api-key-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.api-key-button {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.api-key-button.primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.api-key-button.primary:hover {
+  background: #2563eb;
+}
+
+.api-key-button.secondary {
+  background: rgba(100,116,139,0.2);
+  color: inherit;
+}
+
+.api-key-button.secondary:hover {
+  background: rgba(100,116,139,0.3);
+}
+
+.api-keys-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.api-key-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid;
+  transition: all 0.2s ease;
+}
+
+.settings-panel.dark .api-key-item, .settings-panel-main.dark .api-key-item {
+  border-color: rgba(51,65,85,0.5);
+  background: rgba(30,41,59,0.2);
+}
+
+.settings-panel.light .api-key-item, .settings-panel-main.light .api-key-item {
+  border-color: rgba(203,213,225,0.5);
+  background: rgba(248,250,252,0.5);
+}
+
+.api-key-item:hover {
+  transform: translateY(-1px);
+}
+
+.settings-panel.dark .api-key-item:hover, .settings-panel-main.dark .api-key-item:hover {
+  background: rgba(30,41,59,0.4);
+}
+
+.settings-panel.light .api-key-item:hover, .settings-panel-main.light .api-key-item:hover {
+  background: rgba(248,250,252,0.8);
+}
+
+.api-key-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.api-key-provider {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.default-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.4rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.api-key-value {
+  font-family: monospace;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.api-key-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.api-key-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.api-key-action-btn:hover {
+  opacity: 1;
+  background: rgba(100,116,139,0.15);
+}
+
+.api-key-action-btn.delete:hover {
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+}
+
+.api-key-action-btn.set-default {
+  width: auto;
+  padding: 0 0.5rem;
+  font-size: 0.8rem;
+  background: rgba(59,130,246,0.1);
+  color: #3b82f6;
+}
+
+.api-key-action-btn.set-default:hover {
+  background: rgba(59,130,246,0.2);
+}
+
+.connection-status {
+  min-width: 100px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.status.testing {
+  background: rgba(245,158,11,0.1);
+  color: #f59e0b;
+}
+
+.status.connected {
+  background: rgba(16,185,129,0.1);
+  color: #10b981;
+}
+
+.status.error {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+}
+
+.no-keys-message {
+  padding: 2rem 0;
+  text-align: center;
+  opacity: 0.7;
+  font-style: italic;
 }
 
 @media (max-width: 768px) {
@@ -457,5 +631,16 @@ input:checked + .toggle-slider:before {
   .settings-tab {
     padding: 0.75rem 0.5rem;
     font-size: 0.85rem;
+  }
+
+  .api-key-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .api-key-item-actions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
