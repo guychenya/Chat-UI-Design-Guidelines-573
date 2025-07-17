@@ -1,333 +1,298 @@
-/* ... existing styles ... */
-.dashboard-kpis {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+.dashboard {
+  padding: 2rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.dashboard.in-panel {
+  padding: 1rem;
+}
+
+/* Enhanced Header Styles */
+.dashboard-header {
   margin-bottom: 2rem;
 }
 
-.dashboard-kpi-item {
-  position: relative;
-  padding: 1rem;
-  border-radius: 16px;
-  transition: all 0.2s ease;
-  cursor: grab;
-  background: transparent;
+.dashboard-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
 }
 
-.dark .dashboard-kpi-item {
-  background: rgba(30,41,59,0.2);
+.dashboard-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
 }
 
-.light .dashboard-kpi-item {
-  background: rgba(248,250,252,0.2);
+/* Metrics Grid Layout */
+.metrics-grid {
+  display: grid;
+  gap: 2rem;
 }
 
-.dashboard-kpi-item:active {
-  cursor: grabbing;
-}
-
-.dashboard-kpi-drag-handle {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  padding: 0.5rem;
-  color: inherit;
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
-  cursor: grab;
-}
-
-.dashboard-kpi-item:hover .dashboard-kpi-drag-handle {
-  opacity: 0.8;
-}
-
-.dashboard-kpi-drag-handle:active {
-  cursor: grabbing;
-}
-
-/* Prevent drag handle from showing in panel mode */
-.dashboard-in-panel .dashboard-kpi-drag-handle {
-  display: none;
-}
-
-/* Animation styles for dragging */
-.dashboard-kpi-item[data-dragging="true"] {
-  z-index: 1;
+.metrics-section {
   background: var(--card-bg);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.dark .dashboard-kpi-item[data-dragging="true"] {
-  background: rgba(30,41,59,0.9);
-}
-
-.light .dashboard-kpi-item[data-dragging="true"] {
-  background: rgba(248,250,252,0.9);
-}
-
-/* Progress Ring styles */
-.progress-ring-container {
-  position: relative;
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Metrics Row Layout */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+  align-items: center;
+}
+
+/* Progress Ring Enhancements */
+.progress-ring-container {
+  position: relative;
   margin: 0 auto;
 }
 
 .progress-ring-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   text-align: center;
 }
 
 .progress-ring-value {
+  font-size: 2rem;
   font-weight: 700;
-  font-size: 1.5rem;
-  margin-top: 0.25rem;
+  color: var(--text-primary);
+  margin: 0.5rem 0;
 }
 
 .progress-ring-label {
-  font-size: 0.8rem;
-  opacity: 0.7;
-  max-width: 80%;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
 
-/* Progress Bar styles */
-.dashboard-kpi-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
+/* Progress Bar Improvements */
 .progress-bar-container {
-  width: 100%;
+  margin-bottom: 1.5rem;
 }
 
 .progress-bar-header {
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .progress-bar-icon {
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: rgba(59,130,246,0.1);
-  margin-right: 0.75rem;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  margin-right: 1rem;
 }
 
-.dark .progress-bar-icon {
-  background: rgba(59,130,246,0.2);
+.progress-bar-label-group {
+  flex: 1;
 }
 
 .progress-bar-label {
-  flex: 1;
-  font-size: 0.85rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .progress-bar-value {
+  font-size: 1.125rem;
   font-weight: 600;
-  font-size: 0.85rem;
+  color: var(--text-primary);
 }
 
 .progress-bar-track {
-  height: 6px;
-  width: 100%;
-  background: rgba(100,116,139,0.2);
-  border-radius: 3px;
+  height: 8px;
+  background: var(--track-bg);
+  border-radius: 4px;
   overflow: hidden;
-}
-
-.dark .progress-bar-track {
-  background: rgba(51,65,85,0.5);
 }
 
 .progress-bar-fill {
   height: 100%;
-  border-radius: 3px;
-  transition: width 0.6s ease;
+  border-radius: 4px;
+  transition: width 0.3s ease;
 }
 
-/* Stat Card styles */
-.stat-card {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
+/* Temperature Control Enhancements */
+.temperature-control-container {
+  background: var(--card-bg-soft);
+  padding: 1.5rem;
   border-radius: 12px;
-  background: transparent;
+  margin-bottom: 1.5rem;
 }
 
-.dark .stat-card {
-  background: rgba(30,41,59,0.3);
-}
-
-.light .stat-card {
-  background: rgba(226,232,240,0.3);
-}
-
-.stat-card-icon {
+.temperature-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  margin-right: 1rem;
-  color: white;
+  margin-bottom: 1rem;
 }
 
-.stat-card-content {
-  flex: 1;
-}
-
-.stat-card-label {
-  font-size: 0.85rem;
-  opacity: 0.7;
-  margin-bottom: 0.25rem;
-}
-
-.stat-card-value {
-  font-weight: 600;
+.temperature-icon {
   font-size: 1.25rem;
+  color: var(--accent);
+  margin-right: 0.75rem;
 }
 
-/* Temperature slider styles */
-.temperature-card {
-  margin-top: 0.5rem;
+.temperature-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
-.temperature-control {
+.temperature-slider-container {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-top: 0.25rem;
+}
+
+.temperature-min,
+.temperature-max {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  width: 24px;
+  text-align: center;
 }
 
 .temperature-slider {
   flex: 1;
-  height: 4px;
-  border-radius: 2px;
-  appearance: none;
-  background: rgba(100,116,139,0.3);
+  height: 8px;
+  -webkit-appearance: none;
+  background: var(--track-bg);
+  border-radius: 4px;
   outline: none;
 }
 
 .temperature-slider::-webkit-slider-thumb {
-  appearance: none;
-  width: 16px;
-  height: 16px;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: var(--accent);
   cursor: pointer;
+  border: 2px solid var(--card-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .temperature-value {
+  font-size: 1.125rem;
   font-weight: 600;
-  min-width: 24px;
+  color: var(--text-primary);
+  min-width: 48px;
   text-align: center;
+  padding: 0.25rem 0.5rem;
+  background: var(--card-bg-soft);
+  border-radius: 6px;
 }
 
-/* Dashboard toggles */
-.dashboard-toggles {
-  margin-top: 2rem;
-}
-
-.toggle-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  border-radius: 12px;
-}
-
-.dark .toggle-group {
-  background: rgba(30,41,59,0.3);
-}
-
-.light .toggle-group {
-  background: rgba(226,232,240,0.3);
-}
-
-.toggle-item {
-  display: flex;
+/* Tooltip Styles */
+.metric-tooltip {
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  margin-left: 0.5rem;
 }
 
-.toggle-label {
-  font-size: 0.9rem;
-}
-
-.toggle-button {
-  background: transparent;
-  border: none;
-  color: inherit;
-  font-size: 1.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.6;
-  transition: all 0.2s ease;
-}
-
-.toggle-button:hover {
-  opacity: 0.8;
-}
-
-.toggle-button.active {
-  opacity: 1;
-  color: #3b82f6;
-}
-
-/* Chart styles */
-.chart-container {
-  padding: 1rem;
-  border-radius: 12px;
-  margin-top: 0.5rem;
-}
-
-.dark .chart-container {
-  background: rgba(30,41,59,0.3);
-}
-
-.light .chart-container {
-  background: rgba(226,232,240,0.3);
-}
-
-.chart-title {
+.tooltip-icon {
   font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  opacity: 0.8;
+  color: var(--text-secondary);
+  cursor: help;
 }
 
-.resonance-flow-chart {
-  padding-bottom: 0.5rem;
+.tooltip-text {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive adjustments */
+.metric-tooltip:hover .tooltip-text {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Theme-specific variables */
+.dashboard.dark {
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --card-bg: rgba(30, 41, 59, 0.7);
+  --card-bg-soft: rgba(30, 41, 59, 0.4);
+  --track-bg: rgba(51, 65, 85, 0.5);
+  --accent: #3b82f6;
+  --accent-soft: rgba(59, 130, 246, 0.2);
+  --tooltip-bg: rgba(15, 23, 42, 0.95);
+  --tooltip-text: rgba(255, 255, 255, 0.9);
+}
+
+.dashboard.light {
+  --text-primary: rgba(15, 23, 42, 0.95);
+  --text-secondary: rgba(15, 23, 42, 0.6);
+  --card-bg: rgba(248, 250, 252, 0.8);
+  --card-bg-soft: rgba(248, 250, 252, 0.6);
+  --track-bg: rgba(203, 213, 225, 0.5);
+  --accent: #2563eb;
+  --accent-soft: rgba(37, 99, 235, 0.1);
+  --tooltip-bg: rgba(248, 250, 252, 0.95);
+  --tooltip-text: rgba(15, 23, 42, 0.9);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .dashboard-kpis {
-    gap: 1rem;
+  .dashboard {
+    padding: 1rem;
   }
   
-  .dashboard-kpi-item {
-    padding: 0.75rem;
+  .metrics-row {
+    grid-template-columns: 1fr;
   }
   
-  .dashboard-kpi-drag-handle {
-    padding: 0.25rem;
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.125rem;
+  }
+  
+  .progress-ring-value {
+    font-size: 1.75rem;
+  }
+  
+  .temperature-slider-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .temperature-min,
+  .temperature-max {
+    width: auto;
   }
 }
