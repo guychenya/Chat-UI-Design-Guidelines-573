@@ -21,11 +21,11 @@ const {
   FiBarChart2
 } = FiIcons;
 
-const SettingsPanel = ({ onClose }) => {
+const SettingsPanel = ({ onClose, isMainView = false }) => {
   const { theme, setTheme } = useTheme();
   const { settings, updateSettings, updateModelParameter, resetSettings } = useSettings();
-  const [activeTab, setActiveTab] = useState('dashboard'); // Default to dashboard
-  
+  const [activeTab, setActiveTab] = useState('general');
+
   // Sync font size with body class when settings change
   useEffect(() => {
     document.body.classList.remove('font-small', 'font-medium', 'font-large');
@@ -33,7 +33,6 @@ const SettingsPanel = ({ onClose }) => {
   }, [settings.fontSize]);
 
   const tabs = [
-    { id: 'dashboard', icon: FiBarChart2, label: 'Dashboard' },
     { id: 'general', icon: FiSliders, label: 'General' },
     { id: 'appearance', icon: FiEye, label: 'Appearance' },
     { id: 'privacy', icon: FiLock, label: 'Privacy' },
@@ -44,33 +43,33 @@ const SettingsPanel = ({ onClose }) => {
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
   };
-  
+
   const handleResetSettings = () => {
     if (window.confirm('Are you sure you want to reset all settings to defaults?')) {
       resetSettings();
     }
   };
 
-  return (
-    <motion.div
-      initial={{ x: '100%', opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: '100%', opacity: 0 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className={`settings-panel ${theme}`}
-    >
-      <div className="settings-header">
-        <h2 className="settings-title">{activeTab === 'dashboard' ? 'Dashboard' : 'Settings'}</h2>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={onClose}
-          className="close-btn"
-        >
-          <SafeIcon icon={FiX} />
-        </motion.button>
-      </div>
+  const containerClassName = isMainView 
+    ? `settings-panel-main ${theme}` 
+    : `settings-panel ${theme}`;
 
+  return (
+    <div className={containerClassName}>
+      <div className="settings-header">
+        <h2 className="settings-title">Settings</h2>
+        {!isMainView && (
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onClose}
+            className="close-btn"
+          >
+            <SafeIcon icon={FiX} />
+          </motion.button>
+        )}
+      </div>
+      
       <div className="settings-content">
         <div className="settings-tabs">
           {tabs.map(tab => (
@@ -84,12 +83,8 @@ const SettingsPanel = ({ onClose }) => {
             </button>
           ))}
         </div>
-
+        
         <div className="settings-body">
-          {activeTab === 'dashboard' && (
-            <Dashboard inPanel={true} />
-          )}
-
           {activeTab === 'general' && (
             <div className="settings-section">
               <h3>General Settings</h3>
@@ -107,7 +102,7 @@ const SettingsPanel = ({ onClose }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-
+              
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Send on Enter</div>
@@ -122,7 +117,7 @@ const SettingsPanel = ({ onClose }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-
+              
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Show timestamps</div>
@@ -145,7 +140,7 @@ const SettingsPanel = ({ onClose }) => {
               </div>
             </div>
           )}
-
+          
           {activeTab === 'appearance' && (
             <div className="settings-section">
               <h3>Appearance</h3>
@@ -175,7 +170,7 @@ const SettingsPanel = ({ onClose }) => {
                   </button>
                 </div>
               </div>
-
+              
               <div className="setting-item vertical">
                 <div className="setting-label">Font Size</div>
                 <div className="select-wrapper">
@@ -190,7 +185,7 @@ const SettingsPanel = ({ onClose }) => {
                   </select>
                 </div>
               </div>
-
+              
               <div className="setting-item vertical">
                 <div className="setting-label">Message Density</div>
                 <div className="select-wrapper">
@@ -205,7 +200,7 @@ const SettingsPanel = ({ onClose }) => {
                   </select>
                 </div>
               </div>
-
+              
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Use animations</div>
@@ -222,7 +217,7 @@ const SettingsPanel = ({ onClose }) => {
               </div>
             </div>
           )}
-
+          
           {activeTab === 'privacy' && (
             <div className="settings-section">
               <h3>Privacy Settings</h3>
@@ -240,7 +235,7 @@ const SettingsPanel = ({ onClose }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-
+              
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Share anonymous data</div>
@@ -255,7 +250,7 @@ const SettingsPanel = ({ onClose }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-
+              
               <div className="setting-item action">
                 <button className="danger-button">
                   Delete All Conversations
@@ -263,7 +258,7 @@ const SettingsPanel = ({ onClose }) => {
               </div>
             </div>
           )}
-
+          
           {activeTab === 'notifications' && (
             <div className="settings-section">
               <h3>Notifications</h3>
@@ -281,7 +276,7 @@ const SettingsPanel = ({ onClose }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-
+              
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Notification sounds</div>
@@ -296,7 +291,7 @@ const SettingsPanel = ({ onClose }) => {
                   <span className="toggle-slider"></span>
                 </label>
               </div>
-
+              
               <div className="setting-item">
                 <div className="setting-info">
                   <div className="setting-label">Desktop notifications</div>
@@ -313,7 +308,7 @@ const SettingsPanel = ({ onClose }) => {
               </div>
             </div>
           )}
-
+          
           {activeTab === 'advanced' && (
             <div className="settings-section">
               <h3>Advanced Settings</h3>
@@ -327,7 +322,7 @@ const SettingsPanel = ({ onClose }) => {
                   placeholder="https://api.example.com/v1"
                 />
               </div>
-
+              
               <h4>Model Parameters</h4>
               <div className="setting-item vertical">
                 <div className="setting-info">
@@ -344,7 +339,7 @@ const SettingsPanel = ({ onClose }) => {
                   className="slider-input"
                 />
               </div>
-
+              
               <div className="setting-item vertical">
                 <div className="setting-info">
                   <div className="setting-label">Top P: {settings.modelParameters.topP}</div>
@@ -360,7 +355,7 @@ const SettingsPanel = ({ onClose }) => {
                   className="slider-input"
                 />
               </div>
-
+              
               <div className="setting-item vertical">
                 <div className="setting-info">
                   <div className="setting-label">Max Tokens: {settings.modelParameters.maxTokens}</div>
@@ -395,7 +390,7 @@ const SettingsPanel = ({ onClose }) => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

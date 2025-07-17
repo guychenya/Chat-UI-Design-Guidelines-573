@@ -1,3 +1,11 @@
+.settings-panel,
+.settings-panel-main {
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  overflow: hidden;
+}
+
 .settings-panel {
   position: fixed;
   top: 0;
@@ -5,22 +13,31 @@
   width: 400px;
   height: 100vh;
   border-left: 1px solid;
-  display: flex;
-  flex-direction: column;
-  z-index: 200;
-  overflow: hidden;
 }
 
-.settings-panel.dark {
+.settings-panel-main {
+  width: 100%;
+  height: 100%;
+}
+
+.settings-panel.dark,
+.settings-panel-main.dark {
   background: rgba(15, 23, 42, 0.98);
-  border-color: rgba(51, 65, 85, 0.3);
   color: #e2e8f0;
 }
 
-.settings-panel.light {
+.settings-panel.light,
+.settings-panel-main.light {
   background: rgba(248, 250, 252, 0.98);
-  border-color: rgba(203, 213, 225, 0.3);
   color: #1e293b;
+}
+
+.settings-panel.dark {
+  border-color: rgba(51, 65, 85, 0.3);
+}
+
+.settings-panel.light {
+  border-color: rgba(203, 213, 225, 0.3);
 }
 
 .settings-header {
@@ -31,11 +48,13 @@
   border-bottom: 1px solid;
 }
 
-.settings-panel.dark .settings-header {
+.settings-panel.dark .settings-header,
+.settings-panel-main.dark .settings-header {
   border-color: rgba(51, 65, 85, 0.3);
 }
 
-.settings-panel.light .settings-header {
+.settings-panel.light .settings-header,
+.settings-panel-main.light .settings-header {
   border-color: rgba(203, 213, 225, 0.3);
 }
 
@@ -60,11 +79,13 @@
   color: inherit;
 }
 
-.settings-panel.dark .close-btn:hover {
+.settings-panel.dark .close-btn:hover,
+.settings-panel-main.dark .close-btn:hover {
   background: rgba(51, 65, 85, 0.5);
 }
 
-.settings-panel.light .close-btn:hover {
+.settings-panel.light .close-btn:hover,
+.settings-panel-main.light .close-btn:hover {
   background: rgba(203, 213, 225, 0.5);
 }
 
@@ -81,11 +102,13 @@
   overflow-y: auto;
 }
 
-.settings-panel.dark .settings-tabs {
+.settings-panel.dark .settings-tabs,
+.settings-panel-main.dark .settings-tabs {
   border-color: rgba(51, 65, 85, 0.3);
 }
 
-.settings-panel.light .settings-tabs {
+.settings-panel.light .settings-tabs,
+.settings-panel-main.light .settings-tabs {
   border-color: rgba(203, 213, 225, 0.3);
 }
 
@@ -104,11 +127,13 @@
   color: inherit;
 }
 
-.settings-panel.dark .settings-tab:hover {
+.settings-panel.dark .settings-tab:hover,
+.settings-panel-main.dark .settings-tab:hover {
   background: rgba(51, 65, 85, 0.3);
 }
 
-.settings-panel.light .settings-tab:hover {
+.settings-panel.light .settings-tab:hover,
+.settings-panel-main.light .settings-tab:hover {
   background: rgba(203, 213, 225, 0.3);
 }
 
@@ -117,11 +142,13 @@
   position: relative;
 }
 
-.settings-panel.dark .settings-tab.active {
+.settings-panel.dark .settings-tab.active,
+.settings-panel-main.dark .settings-tab.active {
   background: rgba(59, 130, 246, 0.15);
 }
 
-.settings-panel.light .settings-tab.active {
+.settings-panel.light .settings-tab.active,
+.settings-panel-main.light .settings-tab.active {
   background: rgba(59, 130, 246, 0.1);
 }
 
@@ -154,11 +181,13 @@
   opacity: 0.8;
 }
 
-.settings-panel.dark .settings-section h3 {
+.settings-panel.dark .settings-section h3,
+.settings-panel-main.dark .settings-section h3 {
   border-color: rgba(51, 65, 85, 0.3);
 }
 
-.settings-panel.light .settings-section h3 {
+.settings-panel.light .settings-section h3,
+.settings-panel-main.light .settings-section h3 {
   border-color: rgba(203, 213, 225, 0.3);
 }
 
@@ -253,20 +282,24 @@ input:checked + .toggle-slider:before {
   color: inherit;
 }
 
-.settings-panel.dark .settings-input {
+.settings-panel.dark .settings-input,
+.settings-panel-main.dark .settings-input {
   border-color: rgba(51, 65, 85, 0.5);
 }
 
-.settings-panel.dark .settings-input:focus {
+.settings-panel.dark .settings-input:focus,
+.settings-panel-main.dark .settings-input:focus {
   border-color: #3b82f6;
   outline: none;
 }
 
-.settings-panel.light .settings-input {
+.settings-panel.light .settings-input,
+.settings-panel-main.light .settings-input {
   border-color: rgba(203, 213, 225, 0.5);
 }
 
-.settings-panel.light .settings-input:focus {
+.settings-panel.light .settings-input:focus,
+.settings-panel-main.light .settings-input:focus {
   border-color: #3b82f6;
   outline: none;
 }
@@ -298,11 +331,13 @@ input:checked + .toggle-slider:before {
   color: inherit;
 }
 
-.settings-panel.dark .settings-select {
+.settings-panel.dark .settings-select,
+.settings-panel-main.dark .settings-select {
   border-color: rgba(51, 65, 85, 0.5);
 }
 
-.settings-panel.light .settings-select {
+.settings-panel.light .settings-select,
+.settings-panel-main.light .settings-select {
   border-color: rgba(203, 213, 225, 0.5);
 }
 
@@ -350,19 +385,23 @@ input:checked + .toggle-slider:before {
   color: inherit;
 }
 
-.settings-panel.dark .theme-option {
+.settings-panel.dark .theme-option,
+.settings-panel-main.dark .theme-option {
   border-color: rgba(51, 65, 85, 0.5);
 }
 
-.settings-panel.dark .theme-option:hover {
+.settings-panel.dark .theme-option:hover,
+.settings-panel-main.dark .theme-option:hover {
   background: rgba(51, 65, 85, 0.3);
 }
 
-.settings-panel.light .theme-option {
+.settings-panel.light .theme-option,
+.settings-panel-main.light .theme-option {
   border-color: rgba(203, 213, 225, 0.5);
 }
 
-.settings-panel.light .theme-option:hover {
+.settings-panel.light .theme-option:hover,
+.settings-panel-main.light .theme-option:hover {
   background: rgba(203, 213, 225, 0.3);
 }
 
@@ -370,11 +409,13 @@ input:checked + .toggle-slider:before {
   border-color: #3b82f6;
 }
 
-.settings-panel.dark .theme-option.selected {
+.settings-panel.dark .theme-option.selected,
+.settings-panel-main.dark .theme-option.selected {
   background: rgba(59, 130, 246, 0.15);
 }
 
-.settings-panel.light .theme-option.selected {
+.settings-panel.light .theme-option.selected,
+.settings-panel-main.light .theme-option.selected {
   background: rgba(59, 130, 246, 0.1);
 }
 

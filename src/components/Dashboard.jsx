@@ -294,16 +294,12 @@ const Dashboard = ({ inPanel = false }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const dashboardClass = inPanel ? 'dashboard-in-panel' : 'dashboard';
-
   return (
-    <div className={`${dashboardClass} ${theme}`}>
-      {!inPanel && (
-        <div className="dashboard-header">
-          <h2 className="dashboard-title">Semantic Analysis Dashboard</h2>
-          <p className="dashboard-subtitle">Real-time semantic metrics and analysis visualization</p>
-        </div>
-      )}
+    <div className={`dashboard ${theme}`}>
+      <div className="dashboard-header">
+        <h2 className="dashboard-title">Semantic Analysis Dashboard</h2>
+        <p className="dashboard-subtitle">Real-time semantic metrics and analysis visualization</p>
+      </div>
 
       <div className="dashboard-kpis">
         <ProgressRing
@@ -311,14 +307,14 @@ const Dashboard = ({ inPanel = false }) => {
           color="#3b82f6"
           label="Semantic Uncertainty (Delta S)"
           icon={FiActivity}
-          size={inPanel ? 100 : 120}
+          size={120}
         />
         <ProgressRing
           value={logicalResonance}
           color="#10b981"
           label="Logical Resonance (E Resonance)"
           icon={FiZap}
-          size={inPanel ? 100 : 120}
+          size={120}
         />
         <div className="dashboard-kpi-group">
           <ProgressBar

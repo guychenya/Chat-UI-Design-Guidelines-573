@@ -7,9 +7,9 @@ import { useTheme } from '../contexts/ThemeContext';
 import ModelSelector from './ModelSelector';
 import './Sidebar.css';
 
-const { FiPlus, FiSearch, FiMoreVertical, FiEdit2, FiTrash2, FiMessageSquare } = FiIcons;
+const { FiPlus, FiSearch, FiEdit2, FiTrash2, FiMessageSquare } = FiIcons;
 
-const Sidebar = ({ onClose }) => {
+const Sidebar = () => {
   const { theme } = useTheme();
   const {
     conversations,
@@ -19,12 +19,12 @@ const Sidebar = ({ onClose }) => {
     updateConversationTitle,
     deleteConversation,
   } = useChat();
-
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
 
-  const filteredConversations = conversations.filter(conv =>
+  const filteredConversations = conversations.filter(conv => 
     conv.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     conv.messages.some(msg => msg.content.toLowerCase().includes(searchTerm.toLowerCase()))
   );
@@ -52,7 +52,7 @@ const Sidebar = ({ onClose }) => {
     const now = new Date();
     const diffTime = Math.abs(now - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
+    
     if (diffDays === 1) return 'Today';
     if (diffDays === 2) return 'Yesterday';
     if (diffDays <= 7) return `${diffDays - 1} days ago`;
@@ -60,13 +60,7 @@ const Sidebar = ({ onClose }) => {
   };
 
   return (
-    <motion.div
-      initial={{ x: -300, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: -300, opacity: 0 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className={`sidebar ${theme}`}
-    >
+    <div className={`sidebar ${theme}`}>
       <div className="sidebar-header">
         <motion.button
           whileHover={{ scale: 1.02 }}
@@ -78,7 +72,7 @@ const Sidebar = ({ onClose }) => {
           New Chat
         </motion.button>
       </div>
-
+      
       <div className="sidebar-search">
         <div className="search-container">
           <SafeIcon icon={FiSearch} className="search-icon" />
@@ -91,9 +85,9 @@ const Sidebar = ({ onClose }) => {
           />
         </div>
       </div>
-
+      
       <ModelSelector />
-
+      
       <div className="sidebar-content">
         <div className="conversations-list">
           {filteredConversations.map((conv) => (
@@ -128,6 +122,7 @@ const Sidebar = ({ onClose }) => {
                   )}
                 </div>
               </div>
+              
               <div className="conversation-actions">
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -150,7 +145,7 @@ const Sidebar = ({ onClose }) => {
           ))}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

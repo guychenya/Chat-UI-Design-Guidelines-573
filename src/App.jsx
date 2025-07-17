@@ -1,20 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from './common/SafeIcon';
 import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
 import InputArea from './components/InputArea';
+import Dashboard from './components/Dashboard';
 import SettingsPanel from './components/SettingsPanel';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ChatProvider } from './contexts/ChatContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import './App.css';
 
-const { FiMenu, FiX, FiSettings, FiSun, FiMoon } = FiIcons;
+const { FiMessageSquare, FiBarChart2, FiSettings, FiList, FiSun, FiMoon } = FiIcons;
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeView, setActiveView] = useState('chat');
   const [theme, setTheme] = useState(() => {
     // Check localStorage for saved theme
     const savedTheme = localStorage.getItem('theme');
@@ -26,7 +26,7 @@ function App() {
     }
     return 'light';
   });
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  
   const [fontSize, setFontSize] = useState(() => {
     try {
       const savedSettings = localStorage.getItem('appSettings');
@@ -45,63 +45,76 @@ function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
-  const toggleSettings = () => setSettingsOpen(!settingsOpen);
+
+  const navigationItems = [
+    { id: 'chat', icon: FiMessageSquare, label: 'Chat' },
+    { id: 'history', icon: FiList, label: 'History' },
+    { id: 'dashboard', icon: FiBarChart2, label: 'Dashboard' },
+    { id: 'settings', icon: FiSettings, label: 'Settings' }
+  ];
 
   return (
     <ThemeProvider theme={theme} setTheme={setTheme}>
       <SettingsProvider>
         <ChatProvider>
           <div className={`app ${theme} font-${fontSize}`}>
-            <div className="app-container">
-              {/* Header */}
-              <header className="app-header">
-                <div className="header-left">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={toggleSidebar}
-                    className="sidebar-toggle"
-                  >
-                    <SafeIcon icon={sidebarOpen ? FiX : FiMenu} />
-                  </motion.button>
-                  <h1 className="app-title">AI Assistant</h1>
+            <div className="app-layout">
+              {/* Navigation Sidebar */}
+              <div className="nav-sidebar">
+                <div className="app-logo">
+                  <span className="logo-text">AI Assistant</span>
                 </div>
-                <div className="header-right">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={toggleTheme}
-                    className="theme-toggle"
-                  >
+                
+                <div className="nav-items">
+                  {navigationItems.map(item => (
+                    <button
+                      key={item.id}
+                      className={`nav-item ${activeView === item.id ? 'active' : ''}`}
+                      onClick={() => setActiveView(item.id)}
+                    >
+                      <SafeIcon icon={item.icon} />
+                      <span>{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="sidebar-footer">
+                  <button onClick={toggleTheme} className="theme-toggle-btn">
                     <SafeIcon icon={theme === 'dark' ? FiSun : FiMoon} />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="settings-btn"
-                    onClick={toggleSettings}
-                    title="Settings & Dashboard"
-                  >
-                    <SafeIcon icon={FiSettings} />
-                  </motion.button>
+                    <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                  </button>
                 </div>
-              </header>
-
-              <div className="app-body">
-                <AnimatePresence>
-                  {sidebarOpen && <Sidebar onClose={() => setSidebarOpen(false)} />}
-                </AnimatePresence>
-
-                <main className={`main-content ${sidebarOpen ? 'with-sidebar' : 'full-width'}`}>
-                  <ChatArea />
-                  <InputArea />
-                </main>
-
-                <AnimatePresence>
-                  {settingsOpen && <SettingsPanel onClose={() => setSettingsOpen(false)} />}
-                </AnimatePresence>
+              </div>
+              
+              {/* Content Area with Left and Main Panes */}
+              <div className="content-area">
+                {/* Left Pane - Chat History or Context */}
+                <div className="left-pane">
+                  <Sidebar />
+                </div>
+                
+                {/* Main Pane - Active Content */}
+                <div className="main-pane">
+                  {activeView === 'chat' && (
+                    <>
+                      <ChatArea />
+                      <InputArea />
+                    </>
+                  )}
+                  
+                  {activeView === 'dashboard' && <Dashboard />}
+                  
+                  {activeView === 'settings' && <SettingsPanel isMainView={true} />}
+                  
+                  {activeView === 'history' && (
+                    <div className="history-view">
+                      <h2>Chat History</h2>
+                      <p>View and search your past conversations here.</p>
+                      {/* This would be replaced with a proper history component */}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
