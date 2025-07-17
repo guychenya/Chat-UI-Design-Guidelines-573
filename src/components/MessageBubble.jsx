@@ -12,21 +12,10 @@ import remarkGfm from 'remark-gfm';
 import './MessageBubble.css';
 
 const {
-  FiUser,
-  FiCpu,
-  FiCopy,
-  FiCheck,
-  FiRefreshCw,
-  FiFile,
-  FiImage,
-  FiFileText,
-  FiDownload,
-  FiGrip,
-  FiCode,
-  FiBookmark,
-  FiMessageSquare,
-  FiThumbsUp,
-  FiThumbsDown
+  FiUser, FiCpu, FiCopy, FiCheck, FiRefreshCw, FiFile,
+  FiImage, FiFileText, FiDownload, FiGrip, FiCode,
+  FiBookmark, FiMessageSquare, FiThumbsUp, FiThumbsDown,
+  FiAlertCircle
 } = FiIcons;
 
 const MessageBubble = ({ message, index, isLastMessage }) => {
@@ -37,9 +26,11 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const messageRef = useRef(null);
+  
   const isAi = message.type === 'ai';
   const isReference = message.referencedMessageId;
-  
+  const hasError = message.error;
+
   // Apply animation for last message
   useEffect(() => {
     if (isLastMessage && isAi && settings.useAnimations) {
@@ -118,10 +109,7 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
   };
 
   const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   const getFileIcon = (fileType) => {
@@ -147,7 +135,7 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
-      className={`message-bubble ${message.type} ${theme} ${isDragging ? 'dragging' : ''} ${isReference ? 'referenced' : ''}`}
+      className={`message-bubble ${message.type} ${theme} ${isDragging ? 'dragging' : ''} ${isReference ? 'referenced' : ''} ${hasError ? 'error' : ''}`}
     >
       {isReference && (
         <div className="reference-indicator">
@@ -156,9 +144,9 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
         </div>
       )}
       
-      <div 
-        className="drag-handle" 
-        draggable 
+      <div
+        className="drag-handle"
+        draggable
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         title="Drag to reference this message"
@@ -167,13 +155,17 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
       </div>
       
       <div className="message-avatar">
-        <SafeIcon icon={message.type === 'user' ? FiUser : FiCpu} />
+        {hasError ? (
+          <SafeIcon icon={FiAlertCircle} />
+        ) : (
+          <SafeIcon icon={message.type === 'user' ? FiUser : FiCpu} />
+        )}
       </div>
       
       <div className="message-content">
         <div className="message-header">
           <span className="message-author">
-            {message.type === 'user' ? 'You' : 'AI Assistant'}
+            {message.type === 'user' ? 'You' : message.provider ? `AI (${message.provider})` : 'AI Assistant'}
           </span>
           {settings.showTimestamps && (
             <span className="message-time">
@@ -182,7 +174,7 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
           )}
         </div>
         
-        <div className={`message-text ${message.file ? 'with-file' : ''}`}>
+        <div className={`message-text ${message.file ? 'with-file' : ''} ${hasError ? 'error-message' : ''}`}>
           {isAi ? (
             <ReactMarkdown
               className="markdown-content"
@@ -196,7 +188,7 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
                     <div className="code-block-container">
                       <div className="code-header">
                         <span className="code-language">{language}</span>
-                        <button 
+                        <button
                           className="code-copy-btn"
                           onClick={() => {
                             navigator.clipboard.writeText(String(children).replace(/\n$/, ''));
@@ -247,10 +239,10 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
                     <div className="file-name">{message.file.name}</div>
                     <div className="file-size">{formatFileSize(message.file.size)}</div>
                   </div>
-                  <a 
-                    href={message.file.url} 
-                    download={message.file.name} 
-                    className="file-download" 
+                  <a
+                    href={message.file.url}
+                    download={message.file.name}
+                    className="file-download"
                     title="Download file"
                   >
                     <SafeIcon icon={FiDownload} />
@@ -262,10 +254,10 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
         </div>
         
         <div className="message-actions">
-          {isAi && (
+          {isAi && !hasError && (
             <div className="feedback-buttons">
-              <motion.button 
-                whileHover={{ scale: 1.1 }} 
+              <motion.button
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleFeedback('positive')}
                 className={`feedback-button ${feedback === 'positive' ? 'active' : ''}`}
@@ -273,8 +265,8 @@ const MessageBubble = ({ message, index, isLastMessage }) => {
               >
                 <SafeIcon icon={FiThumbsUp} />
               </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.1 }} 
+              <motion.button
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleFeedback('negative')}
                 className={`feedback-button ${feedback === 'negative' ? 'active' : ''}`}

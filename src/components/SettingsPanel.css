@@ -619,6 +619,41 @@ input:checked + .toggle-slider:before {
   font-style: italic;
 }
 
+/* Provider info box */
+.provider-info-box {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(59,130,246,0.05);
+  border: 1px solid rgba(59,130,246,0.2);
+}
+
+.settings-panel.dark .provider-info-box {
+  background: rgba(59,130,246,0.1);
+}
+
+.provider-info-box h4 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  color: #3b82f6;
+}
+
+.provider-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.provider-list li {
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.provider-list li:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
   .settings-panel {
     width: 100%;

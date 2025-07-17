@@ -5,6 +5,7 @@ import SafeIcon from '../common/SafeIcon';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSettings } from '../contexts/SettingsContext';
 import Dashboard from './Dashboard';
+import { testApiConnection } from '../services/apiService';
 import './SettingsPanel.css';
 
 const {
@@ -55,7 +56,8 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
     if (editingKeyId) {
       updateApiKey(editingKeyId, {
         name: newApiKeyName,
-        value: newApiKeyValue
+        value: newApiKeyValue,
+        provider: newApiKeyName.toLowerCase()
       });
       setEditingKeyId(null);
     } else {
@@ -94,14 +96,16 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
       [keyId]: 'testing'
     }));
     
-    // Simulate API connection test
-    setTimeout(() => {
-      // Randomly succeed or fail for demonstration
-      const success = Math.random() > 0.3;
+    try {
+      // Get the API key from settings
+      const apiKey = settings.apiKeys[keyId].value;
+      
+      // Call the test connection function
+      const result = await testApiConnection(provider, apiKey);
       
       setConnectionStatus(prev => ({
         ...prev,
-        [keyId]: success ? 'connected' : 'error'
+        [keyId]: result.success ? 'connected' : 'error'
       }));
       
       // Clear status after 3 seconds
@@ -112,7 +116,21 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
           return newStatus;
         });
       }, 3000);
-    }, 1500);
+    } catch (error) {
+      setConnectionStatus(prev => ({
+        ...prev,
+        [keyId]: 'error'
+      }));
+      
+      // Clear error status after 3 seconds
+      setTimeout(() => {
+        setConnectionStatus(prev => {
+          const newStatus = {...prev};
+          delete newStatus[keyId];
+          return newStatus;
+        });
+      }, 3000);
+    }
   };
 
   const handleSetDefault = (id) => {
@@ -462,6 +480,18 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
               
               <div className="api-keys-description">
                 <p>Manage your API keys for different AI providers. Set a default provider for your chats.</p>
+                <div className="provider-info-box">
+                  <h4>Supported Providers</h4>
+                  <ul className="provider-list">
+                    <li><strong>OpenAI</strong> - For ChatGPT and GPT-4</li>
+                    <li><strong>Anthropic</strong> - For Claude models</li>
+                    <li><strong>Gemini</strong> - Google's AI models</li>
+                    <li><strong>Ollama</strong> - Local open-source models</li>
+                    <li><strong>Groq</strong> - Fast inference API</li>
+                    <li><strong>Mistral</strong> - Mistral AI models</li>
+                    <li><strong>Supabase</strong> - For Supabase AI integration (format: projectUrl|anonKey)</li>
+                  </ul>
+                </div>
               </div>
 
               <form onSubmit={handleApiKeySubmit} className="api-key-form">
@@ -472,7 +502,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                     value={newApiKeyName}
                     onChange={(e) => setNewApiKeyName(e.target.value)}
                     className="settings-input"
-                    placeholder="Provider Name (Ollama, Claude, Gemini, etc.)"
+                    placeholder="Provider Name (OpenAI, Claude, Gemini, etc.)"
                     required
                   />
                   <div className="api-key-input-wrapper">
@@ -534,7 +564,7 @@ const SettingsPanel = ({ onClose, isMainView = false }) => {
                         </div>
                         <button 
                           className="api-key-action-btn"
-                          onClick={() => testConnection(id, keyData.provider)}
+                          onClick={() => testConnection(id, keyData.provider || keyData.name.toLowerCase())}
                           title="Test connection"
                         >
                           <SafeIcon icon={FiRefreshCw} />
