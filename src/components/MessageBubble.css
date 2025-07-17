@@ -1,0 +1,79 @@
+/* Add to existing MessageBubble.css */
+.drag-handle {
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: inherit;
+  font-size: 1rem;
+}
+
+.message-bubble:hover .drag-handle {
+  opacity: 0.5;
+}
+
+.message-bubble.user .drag-handle {
+  left: auto;
+  right: -24px;
+}
+
+.message-bubble.dragging {
+  opacity: 0.5;
+}
+
+.drag-preview {
+  position: fixed;
+  top: -1000px;
+  left: -1000px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  padding: 8px 12px;
+  pointer-events: none;
+  z-index: 9999;
+  max-width: 200px;
+}
+
+.drag-preview.light {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.drag-preview-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.light .drag-preview-content {
+  color: #1e293b;
+}
+
+.drag-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.light .drag-icon {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.drag-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

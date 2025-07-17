@@ -1,0 +1,152 @@
+.app {
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+.app.dark {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #e2e8f0;
+}
+
+.app.light {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: #1e293b;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid;
+  backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app.dark .app-header {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(51, 65, 85, 0.3);
+}
+
+.app.light .app-header {
+  background: rgba(248, 250, 252, 0.8);
+  border-color: rgba(203, 213, 225, 0.3);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-toggle,
+.theme-toggle,
+.settings-btn,
+.view-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.1rem;
+}
+
+.app.dark .sidebar-toggle,
+.app.dark .theme-toggle,
+.app.dark .settings-btn,
+.app.dark .view-toggle-btn {
+  background: rgba(51, 65, 85, 0.5);
+  color: #e2e8f0;
+}
+
+.app.dark .sidebar-toggle:hover,
+.app.dark .theme-toggle:hover,
+.app.dark .settings-btn:hover,
+.app.dark .view-toggle-btn:hover {
+  background: rgba(51, 65, 85, 0.8);
+}
+
+.app.light .sidebar-toggle,
+.app.light .theme-toggle,
+.app.light .settings-btn,
+.app.light .view-toggle-btn {
+  background: rgba(203, 213, 225, 0.5);
+  color: #1e293b;
+}
+
+.app.light .sidebar-toggle:hover,
+.app.light .theme-toggle:hover,
+.app.light .settings-btn:hover,
+.app.light .view-toggle-btn:hover {
+  background: rgba(203, 213, 225, 0.8);
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.main-content.with-sidebar {
+  margin-left: 0;
+}
+
+.main-content.full-width {
+  margin-left: 0;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 1rem;
+  }
+  
+  .app-title {
+    font-size: 1.1rem;
+  }
+  
+  .sidebar-toggle,
+  .theme-toggle,
+  .settings-btn,
+  .view-toggle-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+}
