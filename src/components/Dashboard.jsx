@@ -23,7 +23,7 @@ const {
   FiToggleLeft,
 } = FiIcons;
 
-const ProgressRing = ({ value, maxValue = 100, size = 120, strokeWidth = 8, color, label, icon }) => {
+const ProgressRing = ({ value, maxValue = 100, size = 100, strokeWidth = 6, color, label, icon }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const progress = value / maxValue;
@@ -175,7 +175,7 @@ const SemanticTree = () => {
           rotate: 0,
           verticalAlign: 'middle',
           align: 'right',
-          fontSize: 12,
+          fontSize: 10,
           color: theme === 'dark' ? '#e2e8f0' : '#1e293b'
         },
         leaves: {
@@ -195,7 +195,7 @@ const SemanticTree = () => {
 
   return (
     <div className="semantic-tree">
-      <ReactECharts option={options} style={{ height: '300px', width: '100%' }} theme={theme === 'dark' ? 'dark' : ''} />
+      <ReactECharts option={options} style={{ height: '250px', width: '100%' }} theme={theme === 'dark' ? 'dark' : ''} />
     </div>
   );
 };
@@ -239,7 +239,8 @@ const ResonanceFlow = () => {
           curveness: 0.5
         },
         label: {
-          color: theme === 'dark' ? '#e2e8f0' : '#1e293b'
+          color: theme === 'dark' ? '#e2e8f0' : '#1e293b',
+          fontSize: 10
         },
         itemStyle: {
           color: theme === 'dark' ? 
@@ -252,7 +253,7 @@ const ResonanceFlow = () => {
 
   return (
     <div className="resonance-flow">
-      <ReactECharts option={options} style={{ height: '300px', width: '100%' }} theme={theme === 'dark' ? 'dark' : ''} />
+      <ReactECharts option={options} style={{ height: '250px', width: '100%' }} theme={theme === 'dark' ? 'dark' : ''} />
     </div>
   );
 };
@@ -294,32 +295,34 @@ const Dashboard = ({ inPanel = false }) => {
     return () => clearInterval(interval);
   }, []);
 
+  const containerClass = inPanel ? `dashboard-in-panel ${theme}` : `dashboard ${theme}`;
+
   return (
-    <div className={`dashboard ${theme}`}>
+    <div className={containerClass}>
       <div className="dashboard-header">
-        <h2 className="dashboard-title">Semantic Analysis Dashboard</h2>
-        <p className="dashboard-subtitle">Real-time semantic metrics and analysis visualization</p>
+        <h2 className="dashboard-title">Analytics Dashboard</h2>
+        <p className="dashboard-subtitle">Real-time semantic metrics</p>
       </div>
 
       <div className="dashboard-kpis">
         <ProgressRing
           value={semanticUncertainty}
           color="#3b82f6"
-          label="Semantic Uncertainty (Delta S)"
+          label="Semantic Uncertainty"
           icon={FiActivity}
-          size={120}
+          size={inPanel ? 80 : 120}
         />
         <ProgressRing
           value={logicalResonance}
           color="#10b981"
-          label="Logical Resonance (E Resonance)"
+          label="Logical Resonance"
           icon={FiZap}
-          size={120}
+          size={inPanel ? 80 : 120}
         />
         <div className="dashboard-kpi-group">
           <ProgressBar
             value={boundaryThreshold}
-            label="Boundary Threshold (Lambda Observe)"
+            label="Boundary Threshold"
             icon={FiMaximize2}
           />
           <div className="stat-card temperature-card">
@@ -356,7 +359,7 @@ const Dashboard = ({ inPanel = false }) => {
           <div className="dashboard-panel-header" onClick={() => setTreeExpanded(!treeExpanded)}>
             <div className="dashboard-panel-title">
               <SafeIcon icon={FiGitMerge} />
-              <span>Semantic Tree Navigation</span>
+              <span>Semantic Tree</span>
             </div>
             <button className="dashboard-panel-toggle">
               <SafeIcon icon={treeExpanded ? FiMinimize2 : FiMaximize2} />
@@ -373,7 +376,7 @@ const Dashboard = ({ inPanel = false }) => {
           <div className="dashboard-panel-header" onClick={() => setFlowExpanded(!flowExpanded)}>
             <div className="dashboard-panel-title">
               <SafeIcon icon={FiActivity} />
-              <span>Resonance Amplification</span>
+              <span>Resonance Flow</span>
             </div>
             <button className="dashboard-panel-toggle">
               <SafeIcon icon={flowExpanded ? FiMinimize2 : FiMaximize2} />
@@ -390,19 +393,19 @@ const Dashboard = ({ inPanel = false }) => {
           <div className="dashboard-panel-header">
             <div className="dashboard-panel-title">
               <SafeIcon icon={FiShield} />
-              <span>Boundary-Based Coherence Resolution (BBCR)</span>
+              <span>BBCR Protocol</span>
             </div>
             <button
               className={`bbcr-toggle ${bbcrEnabled ? 'active' : ''}`}
               onClick={() => setBbcrEnabled(!bbcrEnabled)}
             >
               <SafeIcon icon={bbcrEnabled ? FiToggleRight : FiToggleLeft} />
-              <span>{bbcrEnabled ? 'Enabled' : 'Disabled'}</span>
+              <span>{bbcrEnabled ? 'On' : 'Off'}</span>
             </button>
           </div>
           <div className="bbcr-status">
             <div className={`bbcr-indicator ${bbcrEnabled ? 'active' : 'inactive'}`}></div>
-            <span>Protocol Status: {bbcrEnabled ? 'Active' : 'Inactive'}</span>
+            <span>Status: {bbcrEnabled ? 'Active' : 'Inactive'}</span>
           </div>
         </div>
       </div>

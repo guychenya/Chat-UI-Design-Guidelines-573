@@ -11,16 +11,29 @@ import { ChatProvider } from './contexts/ChatContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import './App.css';
 
-const { FiMessageSquare, FiBarChart2, FiSettings, FiList, FiSun, FiMoon } = FiIcons;
+const { 
+  FiMessageSquare, 
+  FiBarChart2, 
+  FiSettings, 
+  FiList, 
+  FiSun, 
+  FiMoon, 
+  FiMenu, 
+  FiX,
+  FiChevronLeft,
+  FiChevronRight 
+} = FiIcons;
 
 function App() {
   const [activeView, setActiveView] = useState('chat');
+  const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
+  const [rightPanelCollapsed, setRightPanelCollapsed] = useState(true);
+  const [rightPanelContent, setRightPanelContent] = useState('dashboard');
+  
   const [theme, setTheme] = useState(() => {
-    // Check localStorage for saved theme
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) return savedTheme;
     
-    // Check system preference
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark';
     }
@@ -50,9 +63,21 @@ function App() {
   const navigationItems = [
     { id: 'chat', icon: FiMessageSquare, label: 'Chat' },
     { id: 'history', icon: FiList, label: 'History' },
+  ];
+
+  const rightPanelItems = [
     { id: 'dashboard', icon: FiBarChart2, label: 'Dashboard' },
     { id: 'settings', icon: FiSettings, label: 'Settings' }
   ];
+
+  const handleRightPanelToggle = (contentType) => {
+    if (rightPanelContent === contentType && !rightPanelCollapsed) {
+      setRightPanelCollapsed(true);
+    } else {
+      setRightPanelContent(contentType);
+      setRightPanelCollapsed(false);
+    }
+  };
 
   return (
     <ThemeProvider theme={theme} setTheme={setTheme}>
@@ -60,42 +85,71 @@ function App() {
         <ChatProvider>
           <div className={`app ${theme} font-${fontSize}`}>
             <div className="app-layout">
-              {/* Navigation Sidebar */}
-              <div className="nav-sidebar">
-                <div className="app-logo">
+              {/* Main Navigation Bar */}
+              <div className="main-nav">
+                <div className="nav-brand">
                   <span className="logo-text">AI Assistant</span>
                 </div>
                 
-                <div className="nav-items">
-                  {navigationItems.map(item => (
-                    <button
-                      key={item.id}
-                      className={`nav-item ${activeView === item.id ? 'active' : ''}`}
-                      onClick={() => setActiveView(item.id)}
-                    >
-                      <SafeIcon icon={item.icon} />
-                      <span>{item.label}</span>
-                    </button>
-                  ))}
-                </div>
-                
-                <div className="sidebar-footer">
-                  <button onClick={toggleTheme} className="theme-toggle-btn">
-                    <SafeIcon icon={theme === 'dark' ? FiSun : FiMoon} />
-                    <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                <div className="nav-controls">
+                  <button
+                    className="nav-toggle-btn"
+                    onClick={() => setLeftPanelCollapsed(!leftPanelCollapsed)}
+                    title="Toggle chat history"
+                  >
+                    <SafeIcon icon={leftPanelCollapsed ? FiMenu : FiChevronLeft} />
                   </button>
+                  
+                  <div className="nav-items">
+                    {navigationItems.map(item => (
+                      <button
+                        key={item.id}
+                        className={`nav-item ${activeView === item.id ? 'active' : ''}`}
+                        onClick={() => setActiveView(item.id)}
+                        title={item.label}
+                      >
+                        <SafeIcon icon={item.icon} />
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="nav-right">
+                    {rightPanelItems.map(item => (
+                      <button
+                        key={item.id}
+                        className={`nav-item ${rightPanelContent === item.id && !rightPanelCollapsed ? 'active' : ''}`}
+                        onClick={() => handleRightPanelToggle(item.id)}
+                        title={item.label}
+                      >
+                        <SafeIcon icon={item.icon} />
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                    
+                    <button onClick={toggleTheme} className="theme-toggle-btn" title="Toggle theme">
+                      <SafeIcon icon={theme === 'dark' ? FiSun : FiMoon} />
+                    </button>
+                  </div>
                 </div>
               </div>
               
-              {/* Content Area with Left and Main Panes */}
+              {/* Content Area */}
               <div className="content-area">
-                {/* Left Pane - Chat History or Context */}
-                <div className="left-pane">
-                  <Sidebar />
+                {/* Left Panel - Chat History */}
+                <div className={`left-panel ${leftPanelCollapsed ? 'collapsed' : ''}`}>
+                  {!leftPanelCollapsed && <Sidebar />}
+                  <button
+                    className="panel-toggle-btn left"
+                    onClick={() => setLeftPanelCollapsed(!leftPanelCollapsed)}
+                    title={leftPanelCollapsed ? "Show chat history" : "Hide chat history"}
+                  >
+                    <SafeIcon icon={leftPanelCollapsed ? FiChevronRight : FiChevronLeft} />
+                  </button>
                 </div>
                 
-                {/* Main Pane - Active Content */}
-                <div className="main-pane">
+                {/* Main Content */}
+                <div className="main-content">
                   {activeView === 'chat' && (
                     <>
                       <ChatArea />
@@ -103,15 +157,28 @@ function App() {
                     </>
                   )}
                   
-                  {activeView === 'dashboard' && <Dashboard />}
-                  
-                  {activeView === 'settings' && <SettingsPanel isMainView={true} />}
-                  
                   {activeView === 'history' && (
                     <div className="history-view">
                       <h2>Chat History</h2>
                       <p>View and search your past conversations here.</p>
-                      {/* This would be replaced with a proper history component */}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Right Panel - Dashboard/Settings */}
+                <div className={`right-panel ${rightPanelCollapsed ? 'collapsed' : ''}`}>
+                  <button
+                    className="panel-toggle-btn right"
+                    onClick={() => setRightPanelCollapsed(!rightPanelCollapsed)}
+                    title={rightPanelCollapsed ? `Show ${rightPanelContent}` : `Hide ${rightPanelContent}`}
+                  >
+                    <SafeIcon icon={rightPanelCollapsed ? FiChevronLeft : FiChevronRight} />
+                  </button>
+                  
+                  {!rightPanelCollapsed && (
+                    <div className="right-panel-content">
+                      {rightPanelContent === 'dashboard' && <Dashboard inPanel={true} />}
+                      {rightPanelContent === 'settings' && <SettingsPanel isMainView={true} />}
                     </div>
                   )}
                 </div>
